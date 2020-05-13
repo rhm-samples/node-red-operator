@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-red-deployment
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: node-red-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: node-red-app
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ .Values.serviceaccount }}    
+      securityContext: 
+        #runAsUser: 1000 
+        fsGroup: 1000
+      containers:
+        - name: node-red
+          image: {{ .Values.image }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 1880
+          volumeMounts:
+            - mountPath: /data
+              name: data
+          env:
+            - name: NODE_RED_CREDENTIAL_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: node-red-secret
+                  key: credential
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName:  node-red-pvc
+
+
+

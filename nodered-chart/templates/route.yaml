@@ -1,0 +1,15 @@
+{{- if .Values.route.enabled -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ .Values.route.path }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: node-red-app
+spec:
+  to:
+    kind: Service
+    name:  node-red-svc
+  port:
+    targetPort: 1880-tcp
+{{- end }}

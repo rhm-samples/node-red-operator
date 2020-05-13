@@ -1,0 +1,43 @@
+# Default values for nodered-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+image: quay.io/opentestlabs/node-red:1.0.6
+imagePullSecrets: []
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+serviceaccount: node-red-serviceaccount
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: null
+  name: node-red-svc
+
+resources: {}
+
+route: 
+ enabled: true
+ path: node-red
+
+persistencevolume:
+  enabled:  true
+  storageclass: ibmc-block-bronze
+  size: 100Mi
