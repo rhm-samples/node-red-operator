@@ -1,0 +1,19 @@
+#{{- if .Values.persistencevolume.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: node-red-pvc
+  namespace: node-red
+  labels:
+    app: node-red-app
+spec:
+  storageClassName: ibmc-block-bronze
+#"{{ .Values.persistencevolume.storageclass }}"
+  accessModes: 
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+#{{ .Values.persistencevolume.size | quote }}
+#{{- end }}
+
