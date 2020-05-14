@@ -1,0 +1,22 @@
+apiVersion: nodered.com/v1alpha1
+kind: NodeRedHelmAnsible
+metadata:
+  name: example-noderedhelmansible
+spec:
+  # Add fields here
+  size: 3
+  image: quay.io/opentestlabs/node-red:1.0.6
+  imagePullSecrets: []
+  service:
+    type: null
+    name: node-red-svc
+  resources: {}
+  route: 
+    enabled: true
+    path: node-red
+  persistencevolume:
+    enabled:  true
+    storageclass: ibmc-block-bronze
+    size: 100Mi
+  serviceAccount:
+    name: node-red-ansible-operator

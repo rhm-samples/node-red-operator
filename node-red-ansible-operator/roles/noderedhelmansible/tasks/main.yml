@@ -1,0 +1,115 @@
+---
+# tasks file for noderedhelmansible
+- name: create pvc
+  k8s:
+     definition:
+       apiVersion: v1
+       kind: PersistentVolumeClaim
+       metadata:
+         name: node-red-pvc
+         namespace: "{{ meta.namespace }}"
+         labels:
+           app: node-red-app
+       spec:
+         storageClassName: ibmc-block-bronze
+         #"{{ .Values.persistencevolume.storageclass }}"
+         accessModes: 
+           - ReadWriteOnce
+         resources:
+           requests:
+             storage: "{{ persistencevolume.size | quote }}"
+
+- name: create secret
+  k8s:
+    definition:
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          name: node-red-secret
+          namespace: "{{ meta.namespace }}"
+        type: Opaque
+        data:
+          credential: cGFzc3cwcmQK 
+        
+- name: deploy node-red
+  k8s:
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: node-red-deployment
+        namespace: "{{ meta.namespace }}"
+      spec:
+        selector:
+          matchLabels:
+            app: node-red-app
+        replicas: 1
+        template:
+          metadata:
+            labels:
+              app: node-red-app
+          spec:
+            imagePullSecrets:
+            serviceAccountName: node-red-ansible-operator
+            securityContext: 
+              #runAsUser: 1000 
+              fsGroup: 1000
+            containers:
+            - name: node-red
+              image: "{{ image }}"
+              imagePullPolicy: IfNotPresent
+              ports:
+               - containerPort: 1880
+              volumeMounts:
+               - mountPath: /data
+                 name: data
+              env:
+               - name: NODE_RED_CREDENTIAL_SECRET
+                 valueFrom:
+                  secretKeyRef:
+                    name: node-red-secret
+                    key: credential
+            volumes:
+              - name: data
+                persistentVolumeClaim:
+                  claimName:  node-red-pvc
+
+- name: create service
+  k8s:
+    definition:
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: "{{ service.name }}"
+          namespace: "{{ meta.namespace }}"
+          labels:
+            app: node-red-app
+        spec:
+          selector:
+              app: node-red-app
+          type: "{{ service.type }}"
+          ports:
+            - name: 1880-tcp
+              protocol: TCP
+              port: 1880
+              targetPort: 1880
+
+- name: create route
+  k8s:
+    definition:
+        apiVersion: route.openshift.io/v1
+        kind: Route
+        metadata:
+          name: "{{ route.path }}"
+          namespace: "{{ meta.namespace }}"
+          labels:
+            app: node-red-app
+        spec:
+          to:
+            kind: Service
+            name: "{{ service.name }}"
+          port:
+            targetPort: 1880-tcp
+
+
+
