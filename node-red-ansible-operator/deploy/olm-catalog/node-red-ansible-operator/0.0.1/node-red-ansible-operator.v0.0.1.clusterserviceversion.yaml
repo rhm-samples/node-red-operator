@@ -1,0 +1,187 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "nodered.com/v1alpha1",
+          "kind": "NodeRedHelmAnsible",
+          "metadata": {
+            "name": "nodered-ansible"
+          },
+          "spec": {
+            "image": "quay.io/opentestlabs/node-red:1.0.6",
+            "imagePullSecrets": [],
+            "persistencevolume": {
+              "size": "100Mi",
+              "storageclass": "ibmc-block-bronze"
+            },
+            "resources": {},
+            "route": {
+              "enabled": true,
+              "path": "node-red"
+            },
+            "service": {
+              "name": "node-red-svc",
+              "type": null
+            },
+            "serviceAccount": {
+              "name": "node-red-ansible-operator"
+            },
+            "size": 3
+          }
+        }
+      ]
+    capabilities: Basic Install
+  name: node-red-ansible-operator.v0.0.1
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions: {}
+  description: Placeholder description
+  displayName: Node Red Ansible Operator
+  icon:
+  - base64data: ""
+    mediatype: ""
+  install:
+    spec:
+      deployments:
+      - name: node-red-ansible-operator
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              name: node-red-ansible-operator
+          strategy: {}
+          template:
+            metadata:
+              labels:
+                name: node-red-ansible-operator
+            spec:
+              containers:
+              - env:
+                - name: WATCH_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['olm.targetNamespaces']
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: OPERATOR_NAME
+                  value: node-red-ansible-operator
+                - name: ANSIBLE_GATHERING
+                  value: explicit
+                image: quay.io/opentestlabs/node-red-operator:0.0.1
+                imagePullPolicy: Always
+                name: node-red-ansible-operator
+                resources: {}
+                volumeMounts:
+                - mountPath: /tmp/ansible-operator/runner
+                  name: runner
+              serviceAccountName: node-red-ansible-operator
+              volumes:
+              - emptyDir: {}
+                name: runner
+      permissions:
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          - services
+          - services/finalizers
+          - endpoints
+          - persistentvolumeclaims
+          - events
+          - configmaps
+          - secrets
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - apps
+          resources:
+          - deployments
+          - daemonsets
+          - replicasets
+          - statefulsets
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - monitoring.coreos.com
+          resources:
+          - servicemonitors
+          verbs:
+          - get
+          - create
+        - apiGroups:
+          - apps
+          resourceNames:
+          - node-red-ansible-operator
+          resources:
+          - deployments/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          verbs:
+          - get
+        - apiGroups:
+          - apps
+          resources:
+          - replicasets
+          - deployments
+          verbs:
+          - get
+        - apiGroups:
+          - nodered.com
+          resources:
+          - '*'
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - route.openshift.io
+          resources:
+          - routes
+          verbs:
+          - '*'
+        serviceAccountName: node-red-ansible-operator
+    strategy: deployment
+  installModes:
+  - supported: true
+    type: OwnNamespace
+  - supported: true
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - ""
+  maintainers:
+  - {}
+  maturity: alpha
+  provider: {}
+  replaces: node-red-ansible-operator.v0.0.0
+  version: 0.0.1

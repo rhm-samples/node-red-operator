@@ -1,7 +1,7 @@
 apiVersion: nodered.com/v1alpha1
 kind: NodeRedHelmAnsible
 metadata:
-  name: example-noderedhelmansible
+  name: nodered-ansible
 spec:
   # Add fields here
   size: 3
@@ -15,7 +15,6 @@ spec:
     enabled: true
     path: node-red
   persistencevolume:
-    enabled:  true
     storageclass: ibmc-block-bronze
     size: 100Mi
   serviceAccount:
