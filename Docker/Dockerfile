@@ -9,6 +9,9 @@ LABEL name="Node Red" \
       summary="Node Red v1.0.6 setup on ubi7" \
       description="Node-RED is a programming tool for wiring together hardware devices, APIs and online services in new and interesting ways."
 
+#Copy license
+COPY license.txt /licenses/license.txt
+
 # Copy scripts
 COPY scripts/*.sh /tmp/
 RUN chmod 755 /tmp/remove_native_gpio.sh
