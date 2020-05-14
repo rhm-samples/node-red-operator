@@ -93,6 +93,17 @@ spec:
               volumes:
               - emptyDir: {}
                 name: runner
+      clusterPermissions:
+      - rules:
+        - apiGroups:
+          - security.openshift.io
+          resources:
+          - securitycontextconstraints
+          resourceNames:
+          - anyuid
+          verbs:
+          - use
+        serviceAccountName: node-red-ansible-operator                
       permissions:
       - rules:
         - apiGroups:
