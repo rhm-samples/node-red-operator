@@ -10,7 +10,7 @@ LABEL name="Node Red" \
       description="Node-RED is a programming tool for wiring together hardware devices, APIs and online services in new and interesting ways."
 
 #Copy license
-COPY license.txt /licenses/license.txt
+COPY LICENSE /licenses/license.txt
 
 # Copy scripts
 COPY scripts/*.sh /tmp/
@@ -68,5 +68,5 @@ EXPOSE 1880
 # Add a healthcheck (default every 30 secs)
 # HEALTHCHECK CMD curl http://localhost:1880/ || exit 1
 
-ENTRYPOINT ["npm", "start", "--", "--userDir", "/data"]
-
+ARG AUTHSETTING='adminAuth: {  type: "credentials", users: [{ username: "admin",password: "$2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai", permissions: "*" }]}'
+ENTRYPOINT ["npm", "start", "--", "--userDir", "/data", "--adminAuth", "${AUTHSETTING}" ]
