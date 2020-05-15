@@ -13,7 +13,7 @@
            app: node-red-app
        spec:
          storageClassName: "{{ persistencevolume.storageclass }}"
-         accessModes: 
+         accessModes:
            - ReadWriteOnce
          resources:
            requests:
@@ -29,8 +29,8 @@
           namespace: "{{ meta.namespace }}"
         type: Opaque
         data:
-          credential: cGFzc3cwcmQK 
-        
+          credential: cGFzc3cwcmQK
+
 - name: deploy node-red with PVC
   when: "{{ persistencevolume.enabled | bool }}"
   k8s:
@@ -52,7 +52,7 @@
           spec:
             imagePullSecrets:
             serviceAccountName: node-red-ansible-operator
-            securityContext: 
+            securityContext:
               fsGroup: 1000
             containers:
             - name: node-red
@@ -95,7 +95,7 @@
           spec:
             imagePullSecrets:
             serviceAccountName: node-red-ansible-operator
-            securityContext: 
+            securityContext:
               fsGroup: 1000
             containers:
             - name: node-red

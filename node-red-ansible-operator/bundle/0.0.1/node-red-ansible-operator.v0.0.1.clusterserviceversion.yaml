@@ -14,11 +14,10 @@ metadata:
             "image": "quay.io/opentestlabs/node-red:0.0.1",
             "imagePullSecrets": [],
             "persistencevolume": {
-              "enabled": true,
+              "enabled": false,
               "size": "100Mi",
               "storageclass": "ibmc-block-bronze"
             },
-            "resources": {},
             "route": {
               "enabled": true,
               "path": "node-red"
@@ -26,11 +25,7 @@ metadata:
             "service": {
               "name": "node-red-svc",
               "type": null
-            },
-            "serviceAccount": {
-              "name": "node-red-ansible-operator"
-            },
-            "size": 3
+            }
           }
         }
       ]
@@ -234,3 +229,42 @@ spec:
   version: 0.0.1
   description: |
     Node-RED is a flow-based programming tool, originally developed by IBM’s Emerging Technology Services team and now a part of the JS Foundation.
+    
+         **How to get the Application Images from registry?**
+    -----
+    - First Login to redhat catalogue webpage using your credentials.
+    - Search for the Operator.
+    - Click on the Operator.
+    - There is a description that redirects you (upon clicking) to page that explains how to create service accounts.
+    - Create a Service Account. Refer page : <https://access.redhat.com/terms-based-registry/#/accounts>
+    - Once a service account is created , you can click on it and then navigate to tab Openshift Secret to get the yaml file for your ImagePullSecret.
+    - Download the Secret. Create the secret using command
+    ```sh
+        kubectl create -f <secretfile.yml> --namespace=NAMESPACEHERE
+    ```
+    - Use the name of the created secret in the CR file.
+    - For all the application images we would need the secret name to be passed in the CR Spec.
+
+    ----------
+
+    **CR Spec Details**
+    -----
+      Spec                         |            Details
+    -------------------------------|-----------------------------
+    image                          | Node-RED application image
+    imagePullSecrets               | Secret if the image is private
+    service.type                   | NodePort, ClusterIP, null
+    route.enabled                  | true or false defpending on if route to port 1880 is needed
+    route.path                     | Path of the Node-RED URL
+    persistencevolume.enabled      | If volume is to be mounted at /data
+    persistencevolume.storageclass | Storage class of the Persistent volume
+    persistencevolume.size         | Size of the volume in Mi or Gi
+    
+    
+    ----------
+
+    **Logging into the Node-RED dashboard**
+    -----
+    
+    Once the Node-RED pod is ready, you can access the URL to the dashboard on the route path. The password for admin user is set to a default one.
+    
