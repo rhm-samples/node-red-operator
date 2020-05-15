@@ -2,6 +2,7 @@
 # tasks file for noderedhelmansible
 - name: create pvc
   k8s:
+     when: "{{ persistencevolume.enabled | bool }}"
      definition:
        apiVersion: v1
        kind: PersistentVolumeClaim
@@ -11,8 +12,7 @@
          labels:
            app: node-red-app
        spec:
-         storageClassName: ibmc-block-bronze
-         #"{{ .Values.persistencevolume.storageclass }}"
+         storageClassName: "{{ persistencevolume.storageclass }}"
          accessModes: 
            - ReadWriteOnce
          resources:
@@ -52,7 +52,6 @@
             imagePullSecrets:
             serviceAccountName: node-red-ansible-operator
             securityContext: 
-              #runAsUser: 1000 
               fsGroup: 1000
             containers:
             - name: node-red
@@ -76,6 +75,7 @@
 
 - name: create service
   k8s:
+    when: "{{ route.enabled | bool }}"
     definition:
         apiVersion: v1
         kind: Service

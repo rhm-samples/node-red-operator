@@ -14,6 +14,7 @@ metadata:
             "image": "quay.io/opentestlabs/node-red:1.0.6",
             "imagePullSecrets": [],
             "persistencevolume": {
+              "enabed": true
               "size": "100Mi",
               "storageclass": "ibmc-block-bronze"
             },
@@ -47,8 +48,8 @@ spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
-    - description: Installs node-red
-      displayname: Node-RED v1.0.6
+    - description: Installs Node-RED
+      displayname: Node-RED
       kind: NodeRedHelmAnsible
       name: noderedhelmansibles.nodered.com
       version: v1alpha1
