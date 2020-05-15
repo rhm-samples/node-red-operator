@@ -5,7 +5,7 @@ metadata:
 spec:
   # Add fields here
   size: 3
-  image: quay.io/opentestlabs/node-red:1.0.6
+  image: quay.io/opentestlabs/node-red:0.0.1
   imagePullSecrets: []
   service:
     type: null
@@ -15,6 +15,7 @@ spec:
     enabled: true
     path: node-red
   persistencevolume:
+    enabled: true
     storageclass: ibmc-block-bronze
     size: 100Mi
   serviceAccount:

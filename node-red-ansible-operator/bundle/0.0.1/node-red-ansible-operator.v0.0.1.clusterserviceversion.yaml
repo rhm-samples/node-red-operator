@@ -11,10 +11,10 @@ metadata:
             "name": "nodered-ansible"
           },
           "spec": {
-            "image": "quay.io/opentestlabs/node-red:1.0.6",
+            "image": "quay.io/opentestlabs/node-red:0.0.1",
             "imagePullSecrets": [],
             "persistencevolume": {
-              "enabed": true
+              "enabled": true,
               "size": "100Mi",
               "storageclass": "ibmc-block-bronze"
             },
@@ -38,7 +38,7 @@ metadata:
     categories: Developer Tools
     certified: "false"
     containerImage: quay.io/opentestlabs/node-red-operator:0.0.1
-    createdAt: "2020-05-14T12:00:00Z"
+    createdAt: "2020-05-15T12:00:00Z"
     description: Node-RED is a programming tool for wiring together hardware devices, APIs and online services in new and interesting ways.
     repository: N/A
     support: IBM

@@ -1,8 +1,8 @@
 ---
 # tasks file for noderedhelmansible
 - name: create pvc
+  when: "{{ persistencevolume.enabled | bool }}"
   k8s:
-     when: "{{ persistencevolume.enabled | bool }}"
      definition:
        apiVersion: v1
        kind: PersistentVolumeClaim
@@ -74,8 +74,8 @@
                   claimName:  node-red-pvc
 
 - name: create service
+  when: "{{ route.enabled | bool }}"
   k8s:
-    when: "{{ route.enabled | bool }}"
     definition:
         apiVersion: v1
         kind: Service
