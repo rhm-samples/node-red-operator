@@ -75,7 +75,7 @@
                   claimName:  node-red-pvc
 
 - name: deploy node-red without PVC
-  when: not "{{ persistencevolume.enabled | bool }}"
+  when: persistencevolume.enabled|bool == false
   k8s:
     definition:
       apiVersion: apps/v1
