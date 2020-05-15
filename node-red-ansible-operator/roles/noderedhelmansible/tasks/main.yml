@@ -31,7 +31,8 @@
         data:
           credential: cGFzc3cwcmQK 
         
-- name: deploy node-red
+- name: deploy node-red with PVC
+  when: "{{ persistencevolume.enabled | bool }}"
   k8s:
     definition:
       apiVersion: apps/v1
@@ -72,6 +73,43 @@
               - name: data
                 persistentVolumeClaim:
                   claimName:  node-red-pvc
+
+- name: deploy node-red without PVC
+  when: not "{{ persistencevolume.enabled | bool }}"
+  k8s:
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: node-red-deployment
+        namespace: "{{ meta.namespace }}"
+      spec:
+        selector:
+          matchLabels:
+            app: node-red-app
+        replicas: 1
+        template:
+          metadata:
+            labels:
+              app: node-red-app
+          spec:
+            imagePullSecrets:
+            serviceAccountName: node-red-ansible-operator
+            securityContext: 
+              fsGroup: 1000
+            containers:
+            - name: node-red
+              image: "{{ image }}"
+              imagePullPolicy: IfNotPresent
+              ports:
+               - containerPort: 1880
+              env:
+               - name: NODE_RED_CREDENTIAL_SECRET
+                 valueFrom:
+                  secretKeyRef:
+                    name: node-red-secret
+                    key: credential
+
 
 - name: create service
   when: "{{ route.enabled | bool }}"
