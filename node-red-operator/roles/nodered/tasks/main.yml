@@ -94,7 +94,7 @@
               app: node-red-app
           spec:
             imagePullSecrets:
-            serviceAccountName: node-red-ansible-operator
+            serviceAccountName: node-red-operator
             securityContext:
               fsGroup: 1000
             containers:

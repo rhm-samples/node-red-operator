@@ -13,9 +13,9 @@ spec:
       labels:
         name: node-red-ansible-operator
     spec:
-      serviceAccountName: node-red-ansible-operator
+      serviceAccountName: node-red-operator
       containers:
-        - name: node-red-ansible-operator
+        - name: node-red-operator
           # Replace this with the built image name
           image: "quay.io/opentestlabs/node-red-operator:0.0.1"
           imagePullPolicy: "Always"
@@ -32,9 +32,11 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
-              value: "node-red-ansible-operator"
+              value: "node-red-operator"
             - name: ANSIBLE_GATHERING
               value: explicit
+            - name: RELATED_IMAGE_NODERED
+              value: quay.io/opentestlabs/node-red:0.0.1
       volumes:
         - name: runner
           emptyDir: {}

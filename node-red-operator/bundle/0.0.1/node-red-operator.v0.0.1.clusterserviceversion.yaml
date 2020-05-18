@@ -8,10 +8,10 @@ metadata:
           "apiVersion": "nodered.com/v1alpha1",
           "kind": "NodeRed",
           "metadata": {
-            "name": "nodered-cr"
+            "name": "nodered"
           },
           "spec": {
-            "image": "registry.connect.redhat.com/ibm/node-red:0.0.1",
+            "image": "quay.io/opentestlabs/node-red:0.0.1",
             "imagePullSecrets": [],
             "persistentvolume": {
               "enabled": false,
@@ -32,11 +32,11 @@ metadata:
     capabilities: Basic Install
     categories: Developer Tools
     certified: "false"
-    containerImage: registry.connect.redhat.com/ibm/node-red-operator:0.0.1
+    containerImage: registry.connect.redhat.com/ibm-edge/node-red-operator:0.0.1
     createdAt: "2020-05-15T12:00:00Z"
     description: Node-RED is a programming tool for wiring together hardware devices, APIs and online services in new and interesting ways.
     repository: N/A
-    support: IBM
+    support: For Node-Red image related issues open an issue at our public repository {{ repository }}. For Node-RED related issues connect with the Node-REd team at- https://nodered.org/about/community/
   name: node-red-operator.v0.0.1
   namespace: placeholder
 spec:
@@ -46,7 +46,7 @@ spec:
     - description: Installs Node-RED
       displayname: Node-RED
       kind: NodeRed
-      name: nodered.nodered.com
+      name: nodereds.nodered.com
       version: v1alpha1
       resources:
         - kind: Deployment
@@ -97,14 +97,14 @@ spec:
                     fieldRef:
                       fieldPath: metadata.name
                 - name: OPERATOR_NAME
-                  value: node-red-ansible-operator
+                  value: node-red-operator
                 - name: ANSIBLE_GATHERING
                   value: explicit
                 - name: RELATED_IMAGE_NODERED
-                  value: registry.connect.redhat.com/ibm/node-red:0.0.1
-                image: registry.connect.redhat.com/ibm/node-red-operator:0.0.1
+                  value: quay.io/opentestlabs/node-red:0.0.1
+                image: quay.io/opentestlabs/node-red-operator:0.0.1
                 imagePullPolicy: Always
-                name: node-red-ansible-operator
+                name: node-red-operator
                 resources: {}
                 volumeMounts:
                 - mountPath: /tmp/ansible-operator/runner
@@ -123,7 +123,7 @@ spec:
           - anyuid
           verbs:
           - use
-        serviceAccountName: node-red-ansible-operator                
+        serviceAccountName: node-red-operator                
       permissions:
       - rules:
         - apiGroups:
@@ -223,11 +223,11 @@ spec:
   - name: Node-RED
     url: https://nodered.org/
   maintainers:
-  - email: parikhshr@us.ibm.com
-    name: IBM
+  - email: edge@us.ibm.com
+    name: IBM-Edge
   maturity: alpha
   provider: 
-    name: IBM
+    name: IBM-Edge
   version: 0.0.1
   description: |
     Node-RED is a flow-based programming tool, originally developed by IBM’s Emerging Technology Services team and now a part of the JS Foundation.
