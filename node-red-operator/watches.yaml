@@ -1,0 +1,7 @@
+---
+- version: v1alpha1
+  group: nodered.com
+  kind: NodeRed
+  role: nodered
+  overrideValues:
+    image: $RELATED_IMAGE_NODERED

@@ -1,0 +1,272 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "nodered.com/v1alpha1",
+          "kind": "NodeRed",
+          "metadata": {
+            "name": "nodered-cr"
+          },
+          "spec": {
+            "image": "registry.connect.redhat.com/ibm/node-red:0.0.1",
+            "imagePullSecrets": [],
+            "persistentvolume": {
+              "enabled": false,
+              "size": "100Mi",
+              "storageclass": "ibmc-block-bronze"
+            },
+            "route": {
+              "enabled": true,
+              "path": "node-red"
+            },
+            "service": {
+              "name": "node-red-svc",
+              "type": null
+            }
+          }
+        }
+      ]
+    capabilities: Basic Install
+    categories: Developer Tools
+    certified: "false"
+    containerImage: registry.connect.redhat.com/ibm/node-red-operator:0.0.1
+    createdAt: "2020-05-15T12:00:00Z"
+    description: Node-RED is a programming tool for wiring together hardware devices, APIs and online services in new and interesting ways.
+    repository: N/A
+    support: IBM
+  name: node-red-operator.v0.0.1
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: Installs Node-RED
+      displayname: Node-RED
+      kind: NodeRed
+      name: nodered.nodered.com
+      version: v1alpha1
+      resources:
+        - kind: Deployment
+          name: ''
+          version: v1
+        - kind: Service
+          name: ''
+          version: v1
+        - kind: ReplicaSet
+          name: ''
+          version: v1
+        - kind: Pod
+          name: ''
+          version: v1
+        - kind: Route
+          name: ''
+          version: v1
+        - kind: PersistentVolumeClaim
+          name: ''
+          version: v1
+  displayName: Node-RED Operator
+  icon:
+  - base64data: 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
+    mediatype: image/png
+  install:
+    spec:
+      deployments:
+      - name: node-red-operator
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              name: node-red-ansible-operator
+          strategy: {}
+          template:
+            metadata:
+              labels:
+                name: node-red-ansible-operator
+            spec:
+              containers:
+              - env:
+                - name: WATCH_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['olm.targetNamespaces']
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: OPERATOR_NAME
+                  value: node-red-ansible-operator
+                - name: ANSIBLE_GATHERING
+                  value: explicit
+                - name: RELATED_IMAGE_NODERED
+                  value: registry.connect.redhat.com/ibm/node-red:0.0.1
+                image: registry.connect.redhat.com/ibm/node-red-operator:0.0.1
+                imagePullPolicy: Always
+                name: node-red-ansible-operator
+                resources: {}
+                volumeMounts:
+                - mountPath: /tmp/ansible-operator/runner
+                  name: runner
+              serviceAccountName: node-red-operator
+              volumes:
+              - emptyDir: {}
+                name: runner
+      clusterPermissions:
+      - rules:
+        - apiGroups:
+          - security.openshift.io
+          resources:
+          - securitycontextconstraints
+          resourceNames:
+          - anyuid
+          verbs:
+          - use
+        serviceAccountName: node-red-ansible-operator                
+      permissions:
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          - services
+          - services/finalizers
+          - endpoints
+          - persistentvolumeclaims
+          - events
+          - configmaps
+          - secrets
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - apps
+          resources:
+          - deployments
+          - daemonsets
+          - replicasets
+          - statefulsets
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - monitoring.coreos.com
+          resources:
+          - servicemonitors
+          verbs:
+          - get
+          - create
+        - apiGroups:
+          - apps
+          resourceNames:
+          - node-red-ansible-operator
+          resources:
+          - deployments/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          verbs:
+          - get
+        - apiGroups:
+          - apps
+          resources:
+          - replicasets
+          - deployments
+          verbs:
+          - get
+        - apiGroups:
+          - nodered.com
+          resources:
+          - '*'
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - route.openshift.io
+          resources:
+          - routes
+          verbs:
+          - '*'
+        serviceAccountName: node-red-ansible-operator
+    strategy: deployment
+  installModes:
+  - supported: true
+    type: OwnNamespace
+  - supported: true
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - "Developer tools"
+  links:
+  - name: Node-RED
+    url: https://nodered.org/
+  maintainers:
+  - email: parikhshr@us.ibm.com
+    name: IBM
+  maturity: alpha
+  provider: 
+    name: IBM
+  version: 0.0.1
+  description: |
+    Node-RED is a flow-based programming tool, originally developed by IBM’s Emerging Technology Services team and now a part of the JS Foundation.
+    
+         **How to get the Application Images from registry?**
+    -----
+    - First Login to redhat catalogue webpage using your credentials.
+    - Search for the Operator.
+    - Click on the Operator.
+    - There is a description that redirects you (upon clicking) to page that explains how to create service accounts.
+    - Create a Service Account. Refer page : <https://access.redhat.com/terms-based-registry/#/accounts>
+    - Once a service account is created , you can click on it and then navigate to tab Openshift Secret to get the yaml file for your ImagePullSecret.
+    - Download the Secret. Create the secret using command
+    ```sh
+        kubectl create -f <secretfile.yml> --namespace=NAMESPACEHERE
+    ```
+    - Use the name of the created secret in the CR file.
+    - For all the application images we would need the secret name to be passed in the CR Spec.
+
+    ----------
+
+    **CR Spec Details**
+    -----
+      Spec                         |            Details
+    -------------------------------|-----------------------------
+    image                          | Node-RED application image
+    imagePullSecrets               | Secret if the image is private
+    service.type                   | NodePort, ClusterIP, null
+    route.enabled                  | true or false defpending on if route to port 1880 is needed
+    route.path                     | Path of the Node-RED URL
+    persistencevolume.enabled      | If volume is to be mounted at /data
+    persistencevolume.storageclass | Storage class of the Persistent volume
+    persistencevolume.size         | Size of the volume in Mi or Gi
+    
+    
+    ----------
+
+    **Logging into the Node-RED dashboard**
+    -----
+    
+    Once the Node-RED pod is ready, you can access the URL to the dashboard on the route path. The password for admin user is set to a default one.
+    

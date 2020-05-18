@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-red-ansible-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: node-red-ansible-operator
+  template:
+    metadata:
+      labels:
+        name: node-red-ansible-operator
+    spec:
+      serviceAccountName: node-red-ansible-operator
+      containers:
+        - name: node-red-ansible-operator
+          # Replace this with the built image name
+          image: "quay.io/opentestlabs/node-red-operator:0.0.1"
+          imagePullPolicy: "Always"
+          volumeMounts:
+          - mountPath: /tmp/ansible-operator/runner
+            name: runner
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: "node-red-ansible-operator"
+            - name: ANSIBLE_GATHERING
+              value: explicit
+      volumes:
+        - name: runner
+          emptyDir: {}
