@@ -206,7 +206,7 @@ spec:
           - routes
           verbs:
           - '*'
-        serviceAccountName: node-red-ansible-operator
+        serviceAccountName: node-red-operator
     strategy: deployment
   installModes:
   - supported: true
