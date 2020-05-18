@@ -170,7 +170,7 @@ spec:
         - apiGroups:
           - apps
           resourceNames:
-          - node-red-ansible-operator
+          - node-red-operator
           resources:
           - deployments/finalizers
           verbs:
