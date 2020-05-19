@@ -12,7 +12,6 @@ metadata:
           },
           "spec": {
             "image": "quay.io/opentestlabs/node-red:0.0.1",
-            "imagePullSecrets": [],
             "persistentvolume": {
               "enabled": false,
               "size": "100Mi",

@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: node-red-ansible-operator
+  name: node-red-operator
 spec:
   replicas: 1
   selector:

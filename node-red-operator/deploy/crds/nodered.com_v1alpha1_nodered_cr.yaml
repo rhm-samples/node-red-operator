@@ -1,18 +1,16 @@
 apiVersion: nodered.com/v1alpha1
 kind: NodeRed
 metadata:
-  name: nodered-cr
+  name: nodered
 spec:
   image: quay.io/opentestlabs/node-red:0.0.1
-  imagePullSecrets: []
   service:
     type: null
     name: node-red-svc
-  route: 
+  route:
     enabled: true
     path: node-red
   persistentvolume:
-    enabled: true
+    enabled: false
     storageclass: ibmc-block-bronze
     size: 100Mi
-

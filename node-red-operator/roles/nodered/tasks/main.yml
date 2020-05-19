@@ -1,7 +1,24 @@
 ---
 # tasks file for noderedhelmansible
+- name: set default volumes
+  set_fact:
+    volumeMounts:
+    volumeNames:
+
+- block:
+    - name: set volume
+      set_fact:
+        volumeMounts:
+          - mountPath: /data
+            name: data
+        volumeNames:
+          - name: data
+            persistentVolumeClaim:
+              claimName:  node-red-pvc
+  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true
+
 - name: create pvc
-  when: "{{ persistentvolume.enabled | bool }}"
+  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true
   k8s:
      definition:
        apiVersion: v1
@@ -12,12 +29,12 @@
          labels:
            app: node-red-app
        spec:
-         storageClassName: "{{ persistencevolume.storageclass }}"
+         storageClassName: "{{ persistentvolume.storageclass }}"
          accessModes:
            - ReadWriteOnce
          resources:
            requests:
-             storage: "{{ persistencevolume.size | quote }}"
+             storage: "{{ persistentvolume.size | quote }}"
 
 - name: create secret
   k8s:
@@ -31,14 +48,13 @@
         data:
           credential: cGFzc3cwcmQK
 
-- name: deploy node-red with PVC
-  when: "{{ persistentvolume.enabled | bool }}"
+- name: deploy node-red
   k8s:
     definition:
       apiVersion: apps/v1
       kind: Deployment
       metadata:
-        name: node-red-deployment
+        name: node-red
         namespace: "{{ meta.namespace }}"
       spec:
         selector:
@@ -57,62 +73,19 @@
             containers:
             - name: node-red
               image: "{{ image }}"
-              imagePullPolicy: IfNotPresent
+              imagePullPolicy: Always
               ports:
                - containerPort: 1880
-              volumeMounts:
-               - mountPath: /data
-                 name: data
+              volumeMounts: "{{ volumeMounts }}"
               env:
                - name: NODE_RED_CREDENTIAL_SECRET
                  valueFrom:
                   secretKeyRef:
                     name: node-red-secret
                     key: credential
-            volumes:
-              - name: data
-                persistentVolumeClaim:
-                  claimName:  node-red-pvc
-
-- name: deploy node-red without PVC
-  when: persistentvolume.enabled|bool == false
-  k8s:
-    definition:
-      apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        name: node-red-deployment
-        namespace: "{{ meta.namespace }}"
-      spec:
-        selector:
-          matchLabels:
-            app: node-red-app
-        replicas: 1
-        template:
-          metadata:
-            labels:
-              app: node-red-app
-          spec:
-            imagePullSecrets:
-            serviceAccountName: node-red-operator
-            securityContext:
-              fsGroup: 1000
-            containers:
-            - name: node-red
-              image: "{{ image }}"
-              imagePullPolicy: IfNotPresent
-              ports:
-               - containerPort: 1880
-              env:
-               - name: NODE_RED_CREDENTIAL_SECRET
-                 valueFrom:
-                  secretKeyRef:
-                    name: node-red-secret
-                    key: credential
-
+            volumes: "{{ volumeNames }}"
 
 - name: create service
-  when: "{{ route.enabled | bool }}"
   k8s:
     definition:
         apiVersion: v1
@@ -133,6 +106,7 @@
               targetPort: 1880
 
 - name: create route
+  when: route.enabled is defined and route.enabled|bool == true
   k8s:
     definition:
         apiVersion: route.openshift.io/v1
@@ -148,6 +122,3 @@
             name: "{{ service.name }}"
           port:
             targetPort: 1880-tcp
-
-
-
