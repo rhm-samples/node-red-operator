@@ -1,3 +1,4 @@
+---
 - name: create settings.js
   k8s:
   definition:
@@ -10,19 +11,15 @@
         app: node-red-app
     data:
       settings.js: |
-      // The `https` setting requires the `fs` module. Uncomment the following
-      // to make it available:
-      //var fs = require("fs");
-
-      module.exports = {
-        // the tcp port that the Node-RED web server is listening on
+        module.exports = {
+         // the tcp port that the Node-RED web server is listening on
         uiPort: process.env.PORT || 1880,
 
         // By default, the Node-RED UI accepts connections on all IPv4 interfaces.
         // To listen on all IPv6 addresses, set uiHost to "::",
         // The following property can be used to listen on a specific interface. For
         // example, the following would only allow connections from the local machine.
-        //uiHost: "127.0.0.1",
+         // uiHost "127.0.0.1",
 
         // Retry time in milliseconds for MQTT connections
         mqttReconnectTime: 15000,
@@ -38,12 +35,12 @@
         //socketTimeout: 120000,
 
         // Maximum number of messages to wait in queue while attempting to connect to TCP socket
-        //  defaults to 1000
+        //  defaults to 1000 
         //tcpMsgQueueSize: 2000,
 
         // Timeout in milliseconds for HTTP request connections
         //  defaults to 120 seconds
-        //httpRequestTimeout: 120000,
+        //httpRequestTimeout 120000,
 
         // The maximum length, in characters, of any message sent to the debug sidebar tab
         debugMaxLength: 1000,
@@ -63,14 +60,13 @@
         // The file containing the flows. If not set, it defaults to flows_<hostname>.json
         //flowFile: 'flows.json',
 
-        // To enabled pretty-printing of the flow within the flow file, set the following
-        //  property to true:
+        // To enabled pretty-printing of the flow within the flow file, set the following property to true
         //flowFilePretty: true,
 
         // By default, credentials are encrypted in storage using a generated key. To
         // specify your own secret, set the following property.
         // If you want to disable encryption of credentials, set this property to false.
-        // Note: once you set this property, do not change it - doing so will prevent
+        // Note- once you set this property, do not change it - doing so will prevent
         // node-red from being able to decrypt your existing credentials and they will be
         // lost.
         credentialSecret: "{{ secretkey|b64decode if secretkey != 'false' else 'false'|bool  }}",
@@ -87,7 +83,7 @@
         // By default, the Node-RED UI is available at http://localhost:1880/
         // The following property can be used to specify a different root path.
         // If set to false, this is disabled.
-        //httpAdminRoot: '/admin',
+        //httpAdminRoot '/admin',
 
         // Some nodes, such as HTTP In, can be used to listen for incoming http requests.
         // By default, these are served relative to '/'. The following property
@@ -265,7 +261,7 @@
           projects: {
           // To enable the Projects feature, set this value to true
           enabled: false
-          }
+           }
+         }
         }
-      }
   

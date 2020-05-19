@@ -3,6 +3,7 @@ kind: Role
 metadata:
   creationTimestamp: null
   name: node-red-ansible-operator
+  namespace: demo-atomic
 rules:
 - apiGroups:
   - ""
