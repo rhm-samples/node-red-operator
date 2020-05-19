@@ -34,8 +34,8 @@ metadata:
     containerImage: registry.connect.redhat.com/ibm-edge/node-red-operator:0.0.1
     createdAt: "2020-05-15T12:00:00Z"
     description: Node-RED is a programming tool for wiring together hardware devices, APIs and online services in new and interesting ways.
-    repository: N/A
-    support: For Node-Red image related issues open an issue at our public repository {{ repository }}. For Node-RED related issues connect with the Node-REd team at- https://nodered.org/about/community/
+    repository: https://github.com/rhm-samples/node-red-operator/
+    support: For Node-Red image related issues open an issue at our public repository https://github.com/rhm-samples/node-red-operator/issues. For Node-RED related issues connect with the Node-REd team at- https://nodered.org/about/community/
   name: node-red-operator.v0.0.1
   namespace: placeholder
 spec:

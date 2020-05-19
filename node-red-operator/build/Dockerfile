@@ -1,6 +1,6 @@
 FROM quay.io/operator-framework/ansible-operator:v0.16.0
 LABEL name="Node-RED Operator"
-LABEL vendor="IBM"
+LABEL vendor="IBM-Edge"
 LABEL version="v0.0.1"
 LABEL release="1"
 LABEL summary="Node-RED is a programming tool for wiring together hardware devices, APIs and online services in new and interesting ways."

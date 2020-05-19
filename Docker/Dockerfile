@@ -1,12 +1,12 @@
 FROM registry.access.redhat.com/ubi8/ubi AS base
-MAINTAINER IBM parikhshr@ibm.com
+MAINTAINER IBM-Edge edge@us.ibm.com
 
 LABEL name="Node Red" \
-      maintainer="parikhshr@ibm.com" \
+      maintainer="edge@us.ibm.com" \
       vendor="node-red" \
       version="1.0.6" \
       release="1" \
-      summary="Node Red v1.0.6 setup on ubi7" \
+      summary="Node Red v1.0.6 setup on ubi8" \
       description="Node-RED is a programming tool for wiring together hardware devices, APIs and online services in new and interesting ways."
 
 #Copy license
