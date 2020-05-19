@@ -24,7 +24,9 @@ metadata:
             "service": {
               "name": "node-red-svc",
               "type": null
-            }
+            },
+            "adminpassword":,
+            "secretkey":
           }
         }
       ]
@@ -257,9 +259,11 @@ spec:
     service.type                   | NodePort, ClusterIP, null
     route.enabled                  | true or false defpending on if route to port 1880 is needed
     route.path                     | Path of the Node-RED URL
-    persistencevolume.enabled      | If volume is to be mounted at /data
-    persistencevolume.storageclass | Storage class of the Persistent volume
-    persistencevolume.size         | Size of the volume in Mi or Gi
+    persistentvolume.enabled       | If volume is to be mounted at /data
+    persistentvolume.storageclass  | Storage class of the Persistent volume
+    persistentvolume.size          | Size of the volume in Mi or Gi
+    adminpassword                  | To password protect the Node-RED editor and admin API. Give the bcrypt hash of the password. See http://nodered.org/docs/security.html#generating-the-password-hash
+    secretkey                      | By default, credentials are encrypted in storage using a generated key. To specify your own secret, set the following property. If you want to disable encryption of credentials, set this property to false.
     
     
     ----------
@@ -267,5 +271,5 @@ spec:
     **Logging into the Node-RED dashboard**
     -----
     
-    Once the Node-RED pod is ready, you can access the URL to the dashboard on the route path. The password for admin user is set to a default one.
+    Once the Node-RED pod is ready, you can access the URL to the dashboard on the route path. The credentails to dashboard is admin and the password set in the "adminpassword" field.
     

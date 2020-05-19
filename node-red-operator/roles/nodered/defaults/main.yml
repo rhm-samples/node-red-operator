@@ -19,3 +19,5 @@ persistentvolume:
   enabled:  true
   storageclass: ibmc-block-bronze
   size: 100Mi
+adminpassword:
+secretkey:

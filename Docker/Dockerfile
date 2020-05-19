@@ -68,5 +68,5 @@ EXPOSE 1880
 # Add a healthcheck (default every 30 secs)
 # HEALTHCHECK CMD curl http://localhost:1880/ || exit 1
 
-ARG AUTHSETTING='adminAuth: {  type: "credentials", users: [{ username: "admin",password: "$2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai", permissions: "*" }]}'
-ENTRYPOINT ["npm", "start", "--", "--userDir", "/data", "--adminAuth", "${AUTHSETTING}" ]
+#ARG AUTHSETTING='adminAuth:{type: "credentials", users: [{ username: "admin",password: #"$2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai", permissions: "*" }]}'
+ENTRYPOINT ["npm", "start", "--", "--settings", "/usr/conf/settings.js" ]

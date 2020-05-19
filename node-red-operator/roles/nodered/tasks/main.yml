@@ -3,15 +3,25 @@
 - name: set default volumes
   set_fact:
     volumeMounts:
+      - mountPath: /usr/conf
+        name: config-volume
     volumeNames:
+      - configMap:
+          name: settings-configmap
+        name: config-volume
 
 - block:
     - name: set volume
       set_fact:
         volumeMounts:
+          - mountPath: /usr/conf
+            name: config-volume
           - mountPath: /data
             name: data
         volumeNames:
+          - configMap:
+              name: settings-configmap
+            name: config-volume
           - name: data
             persistentVolumeClaim:
               claimName:  node-red-pvc
@@ -36,17 +46,9 @@
            requests:
              storage: "{{ persistentvolume.size | quote }}"
 
-- name: create secret
-  k8s:
-    definition:
-        apiVersion: v1
-        kind: Secret
-        metadata:
-          name: node-red-secret
-          namespace: "{{ meta.namespace }}"
-        type: Opaque
-        data:
-          credential: cGFzc3cwcmQK
+
+- name: create configmap
+  include_tasks: configmap.yaml
 
 - name: deploy node-red
   k8s:
@@ -122,3 +124,4 @@
             name: "{{ service.name }}"
           port:
             targetPort: 1880-tcp
+            
