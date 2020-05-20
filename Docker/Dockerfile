@@ -18,10 +18,11 @@ RUN chmod 755 /tmp/remove_native_gpio.sh
 # Install tools, create Node-RED app and data dir, add user and set rights
 RUN set -ex && \
     yum install -y --disableplugin=subscription-manager tzdata iputils nano git openssl openssh-clients && \
-    mkdir -p /usr/src/node-red /data && \
+    mkdir -p /usr/src/node-red /data /usr/conf && \
     adduser -d /usr/src/node-red -M node-red -u 1000 && \
     chown -R node-red:node-red /data && \
-    chown -R node-red:node-red /usr/src/node-red
+    chown -R node-red:node-red /usr/src/node-red && \
+    chown -R node-red:node-red /usr/conf
 
 # Set work directory
 WORKDIR /usr/src/node-red
