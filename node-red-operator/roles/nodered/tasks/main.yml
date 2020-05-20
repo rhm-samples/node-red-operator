@@ -63,7 +63,7 @@
         selector:
           matchLabels:
             app: node-red-app
-        replicas: 1
+        replicas: "{{ size }}"
         template:
           metadata:
             labels:

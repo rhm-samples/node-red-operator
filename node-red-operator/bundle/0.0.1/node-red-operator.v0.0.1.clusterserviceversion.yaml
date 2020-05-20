@@ -12,6 +12,7 @@ metadata:
           },
           "spec": {
             "image": "quay.io/opentestlabs/node-red:0.0.1",
+            "size": 1,
             "persistentvolume": {
               "enabled": false,
               "size": "100Mi",
@@ -33,7 +34,7 @@ metadata:
     capabilities: Basic Install
     categories: Developer Tools
     certified: "false"
-    containerImage: registry.connect.redhat.com/ibm-edge/node-red-operator:0.0.1
+    containerImage: quay.io/opentestlabs/node-red:0.0.1
     createdAt: "2020-05-15T12:00:00Z"
     description: Node-RED is a programming tool for wiring together hardware devices, APIs and online services in new and interesting ways.
     repository: https://github.com/rhm-samples/node-red-operator/
@@ -68,6 +69,9 @@ spec:
         - kind: PersistentVolumeClaim
           name: ''
           version: v1
+        - kind: ConfigMap
+          name: ''
+          version: v1           
   displayName: Node-RED Operator
   icon:
   - base64data: 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
@@ -255,6 +259,7 @@ spec:
       Spec                         |            Details
     -------------------------------|-----------------------------
     image                          | Node-RED application image
+    size                           | Number of instances of Node-RED
     imagePullSecrets               | Secret if the image is private
     service.type                   | NodePort, ClusterIP, null
     route.enabled                  | true or false defpending on if route to port 1880 is needed
@@ -263,9 +268,8 @@ spec:
     persistentvolume.storageclass  | Storage class of the Persistent volume
     persistentvolume.size          | Size of the volume in Mi or Gi
     adminpassword                  | To password protect the Node-RED editor and admin API. Give the bcrypt hash of the password. See http://nodered.org/docs/security.html#generating-the-password-hash
-    secretkey                      | By default, credentials are encrypted in storage using a generated key. To specify your own secret, set the following property in base64 encoding. If you want to disable encryption of credentials, set this property to false.
-    
-    
+    secretkey                      | By default, credentials are encrypted in storage using a generated key. To specify your own secret, set the following property in base64 encoding. Note- the secret should not have a newline or whitespace. If you want to disable encryption of credentials, set this property to 'false'.
+        
     ----------
 
     **Logging into the Node-RED dashboard**
