@@ -3,7 +3,8 @@ kind: NodeRed
 metadata:
   name: nodered
 spec:
-  image: image-registry.openshift-image-registry.svc:5000/demo-atomic/node-red-app:0.0.1
+  image: quay.io/opentestlabs/node-red:0.0.1
+  size: 1
   service:
     type: null
     name: node-red-svc
@@ -15,4 +16,4 @@ spec:
     storageclass: ibmc-block-bronze
     size: 100Mi
   adminpassword: $2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai
-  secretkey: c2VjcmV0 
+  secretkey: c2VjcmV0
