@@ -15,4 +15,4 @@ spec:
     storageclass: ibmc-block-bronze
     size: 100Mi
   adminpassword: $2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai
-  secretkey: 'false'
+  secretkey: c2VjcmV0 
