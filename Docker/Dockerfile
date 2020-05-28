@@ -58,7 +58,7 @@ ENV NODE_RED_VERSION=1.0.6 \
     FLOWS=flows.json
 
 # ENV NODE_RED_ENABLE_SAFE_MODE=true    # Uncomment to enable safe start mode (flows not running)
-# ENV NODE_RED_ENABLE_PROJECTS=true     # Uncomment to enable projects option
+ENV NODE_RED_ENABLE_PROJECTS=true     # Uncomment to enable projects option
 
 # User configuration directory volume
 VOLUME ["/data"]

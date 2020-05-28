@@ -26,8 +26,13 @@ metadata:
               "name": "node-red-svc",
               "type": null
             },
-            "adminpassword": "",
-            "secretkey": ""
+            "adminpassword": "$2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai",
+            "secretkey": "c2VjcmV0",
+            "user": {
+                "name":"shraddha",
+                "password":"$2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai",
+                "permission":"read"
+            }
           }
         }
       ]
