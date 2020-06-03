@@ -7,10 +7,9 @@
       - app = node-red-app
     field_selectors:
       - status.phase=Running
-      - spec.containers[0].image!="{{ image }}"
-  register: pod_list
+  register: podlist
  
-- name: upgrade member {{ item }}
+- name: upgrade member
   k8s:
     state: "present"
     definition:
@@ -23,5 +22,5 @@
         containers:
         - name: "node-red"
           image: "{{ image }}"
-
-  loop: "{{ pod_list.resources }}"
+  when: item.spec.containers[0].image != image
+  loop: "{{ podlist.resources }}"

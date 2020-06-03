@@ -7,7 +7,7 @@ chart:
   type: application
   version: 0.1.0
   appVersion: 1.0.6
-image: quay.io/opentestlabs/node-red:0.0.1
+image: image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2
 imagePullSecrets: []
 service:
   type: null
@@ -19,9 +19,9 @@ persistentvolume:
   enabled:  true
   storageclass: ibmc-block-bronze
   size: 100Mi
-adminpassword:
-secretkey:
+adminpassword: $2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai
+secretkey: c2VjcmV0
 user:
-  name:
-  password:
-  permission:
+  name: shraddha
+  password: $2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai
+  permission: read
