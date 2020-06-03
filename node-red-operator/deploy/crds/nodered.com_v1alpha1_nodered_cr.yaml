@@ -3,7 +3,7 @@ kind: NodeRed
 metadata:
   name: nodered
 spec:
-  image: quay.io/opentestlabs/node-red:0.0.1
+  image: image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2
   size: 1
   service:
     type: null

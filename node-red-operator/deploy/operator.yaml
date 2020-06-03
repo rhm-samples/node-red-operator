@@ -17,7 +17,7 @@ spec:
       containers:
         - name: node-red-operator
           # Replace this with the built image name
-          image: "image-registry.openshift-image-registry.svc:5000/demo-atomic/node-red-operator:0.0.1"
+          image: "image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red-operator:0.0.2"
           imagePullPolicy: "Always"
           volumeMounts:
           - mountPath: /tmp/ansible-operator/runner
@@ -36,7 +36,7 @@ spec:
             - name: ANSIBLE_GATHERING
               value: explicit
             - name: RELATED_IMAGE_NODERED
-              value: node-red-app:0.0.1
+              value: image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2
       volumes:
         - name: runner
           emptyDir: {}

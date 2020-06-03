@@ -11,8 +11,8 @@ metadata:
             "name": "nodered"
           },
           "spec": {
-            "image": "registry.connect.redhat.com/ibm-edge/node-red:0.0.1",
-            "size": 1,
+            "adminpassword": "$2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai",
+            "image": "image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2",
             "persistentvolume": {
               "enabled": false,
               "size": "100Mi",
@@ -22,24 +22,29 @@ metadata:
               "enabled": true,
               "path": "node-red"
             },
+            "secretkey": "c2VjcmV0",
             "service": {
               "name": "node-red-svc",
               "type": null
             },
-            "adminpassword": "$2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai",
-            "secretkey": "c2VjcmV0"
+            "size": 1,
+            "user": {
+              "name": "shraddha",
+              "password": "$2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai",
+              "permission": "read"
+            }
           }
         }
       ]
     capabilities: Seamless Upgrades
     categories: Developer Tools
     certified: "false"
-    containerImage: registry.connect.redhat.com/ibm-edge/node-red:0.0.1
-    createdAt: "2020-05-15T12:00:00Z"
+    containerImage: image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2
+    createdAt: "2020-05-29T12:00:00Z"
     description: Node-RED is a programming tool for wiring together hardware devices, APIs and online services in new and interesting ways.
     repository: https://github.com/rhm-samples/node-red-operator/
     support: Refer Readme- https://github.com/rhm-samples/node-red-operator/issues.
-  name: node-red-operator.v0.0.1
+  name: node-red-operator.v0.0.2
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -106,8 +111,8 @@ spec:
                 - name: ANSIBLE_GATHERING
                   value: explicit
                 - name: RELATED_IMAGE_NODERED
-                  value: registry.connect.redhat.com/ibm-edge/node-red:0.0.1
-                image: registry.connect.redhat.com/ibm-edge/node-red-operator:0.0.1
+                  value: image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2
+                image: image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red-operator:0.0.2
                 imagePullPolicy: Always
                 name: node-red-operator
                 resources: {}
@@ -128,7 +133,7 @@ spec:
           - anyuid
           verbs:
           - use
-        serviceAccountName: node-red-operator                
+        serviceAccountName: node-red-operator  
       permissions:
       - rules:
         - apiGroups:
@@ -233,7 +238,8 @@ spec:
   maturity: alpha
   provider: 
     name: IBM-Edge
-  version: 0.0.1
+  replaces: node-red-operator.v0.0.1
+  version: 0.0.2
   description: |
     Node-RED is a flow-based programming tool, originally developed by IBM's Emerging Technology Services team and now a part of the JS Foundation.
     
@@ -276,4 +282,3 @@ spec:
     -----
     
     Once the Node-RED pod is ready, you can access the URL to the dashboard on the route path. The credentails to dashboard is admin and the password set in the "adminpassword" field.
-    

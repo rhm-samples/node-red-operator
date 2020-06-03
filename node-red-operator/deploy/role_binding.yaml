@@ -5,7 +5,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: node-red-operator
-  namespace: demo-atomic 
+  namespace: node-red-p2 
 roleRef:
   kind: Role
   name: node-red-ansible-operator

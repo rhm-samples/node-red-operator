@@ -5,7 +5,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: node-red-operator
-  namespace: demo-atomic
+  namespace: node-red-p2
 roleRef:
   kind: ClusterRole
   name: node-red-operator-clusterrole
