@@ -1,0 +1,27 @@
+---
+- name: Get a list of all pods from the given namespace and label
+  k8s_info:
+    kind: Pod
+    namespace: "{{ meta.namespace }}"
+    label_selectors:
+      - app = node-red-app
+    field_selectors:
+      - status.phase=Running
+      - spec.containers[0].image!="{{ image }}"
+  register: pod_list
+ 
+- name: upgrade member {{ item }}
+  k8s:
+    state: "present"
+    definition:
+      apiVersion: "v1"
+      kind: "Pod"
+      metadata:
+        name: "{{ item.metadata.name }}"
+        namespace: "{{ meta.namespace }}"
+      spec:
+        containers:
+        - name: "node-red"
+          image: "{{ image }}"
+
+  loop: "{{ pod_list.resources }}"

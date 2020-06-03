@@ -120,3 +120,5 @@
           port:
             targetPort: 1880-tcp
             
+- name: upgrade earlier versions
+  include_tasks: upgrade.yaml
