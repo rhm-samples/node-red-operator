@@ -1,0 +1,14 @@
+---
+# defaults file for noderedhelmansible
+chart:
+  apiVersion: v2
+  name: nodered-chart
+  description: Operator to install Node-Red
+  type: application
+  version: 0.2.0
+  appVersion: 1.0.6
+image: image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2
+user:
+  name: shraddha
+  password: $2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai
+  permission: read
