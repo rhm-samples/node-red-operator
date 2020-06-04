@@ -1,0 +1,202 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "nodered.com/v1alpha1",
+          "kind": "NodeRed",
+          "metadata": {
+            "name": "nodered"
+          },
+          "spec": {
+            "adminpassword": "$2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai",
+            "image": "image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2",
+            "persistentvolume": {
+              "enabled": false,
+              "size": "100Mi",
+              "storageclass": "ibmc-block-bronze"
+            },
+            "route": {
+              "enabled": true,
+              "path": "node-red"
+            },
+            "secretkey": "c2VjcmV0",
+            "service": {
+              "name": "node-red-svc",
+              "type": null
+            },
+            "size": 1,
+            "user": {
+              "name": "shraddha",
+              "password": "$2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai",
+              "permission": "read"
+            }
+          }
+        },
+        {
+          "apiVersion": "noderedupgrade.com/v1alpha1",
+          "kind": "NodeRedUpgrade",
+          "metadata": {
+            "name": "noderedupgrade"
+          },
+          "spec": {
+            "image": "image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2"
+          }
+        }
+      ]
+    capabilities: Basic Install
+  name: node-red-operator.v0.0.2
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions: {}
+  description: Placeholder description
+  displayName: Node Red Operator
+  icon:
+  - base64data: ""
+    mediatype: ""
+  install:
+    spec:
+      deployments:
+      - name: node-red-operator
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              name: node-red-ansible-operator
+          strategy: {}
+          template:
+            metadata:
+              labels:
+                name: node-red-ansible-operator
+            spec:
+              containers:
+              - env:
+                - name: WATCH_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['olm.targetNamespaces']
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: OPERATOR_NAME
+                  value: node-red-operator
+                - name: ANSIBLE_GATHERING
+                  value: explicit
+                - name: RELATED_IMAGE_NODERED
+                  value: image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2
+                image: image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red-operator:0.0.2
+                imagePullPolicy: Always
+                name: node-red-operator
+                resources: {}
+                volumeMounts:
+                - mountPath: /tmp/ansible-operator/runner
+                  name: runner
+              serviceAccountName: node-red-operator
+              volumes:
+              - emptyDir: {}
+                name: runner
+      permissions:
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          - services
+          - services/finalizers
+          - endpoints
+          - persistentvolumeclaims
+          - events
+          - configmaps
+          - secrets
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - apps
+          resources:
+          - deployments
+          - daemonsets
+          - replicasets
+          - statefulsets
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - monitoring.coreos.com
+          resources:
+          - servicemonitors
+          verbs:
+          - get
+          - create
+        - apiGroups:
+          - apps
+          resourceNames:
+          - node-red-ansible-operator
+          resources:
+          - deployments/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          verbs:
+          - get
+        - apiGroups:
+          - apps
+          resources:
+          - replicasets
+          - deployments
+          verbs:
+          - get
+        - apiGroups:
+          - nodered.com
+          resources:
+          - '*'
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - route.openshift.io
+          resources:
+          - routes
+          verbs:
+          - '*'
+        serviceAccountName: node-red-ansible-operator
+    strategy: deployment
+  installModes:
+  - supported: true
+    type: OwnNamespace
+  - supported: true
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - ""
+  maintainers:
+  - {}
+  maturity: alpha
+  provider: {}
+  replaces: node-red-operator.v0.0.0
+  version: 0.0.2
