@@ -15,9 +15,5 @@ spec:
     enabled: false
     storageclass: ibmc-block-bronze
     size: 100Mi
-  adminpassword: $2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai
+  adminpassword: $2a$08$V4gPANVy34NKRbnUbMv85OKTEvRmlMTdu6Qmcb2Az5LfOMT5aPA9G
   secretkey: c2VjcmV0
-  user:
-    name: shraddha
-    password: $2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai
-    permission: read

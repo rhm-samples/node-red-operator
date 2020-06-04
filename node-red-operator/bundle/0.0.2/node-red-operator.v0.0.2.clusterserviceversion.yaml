@@ -11,7 +11,7 @@ metadata:
             "name": "nodered"
           },
           "spec": {
-            "adminpassword": "$2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai",
+            "adminpassword": "$2a$08$V4gPANVy34NKRbnUbMv85OKTEvRmlMTdu6Qmcb2Az5LfOMT5aPA9G",
             "image": "image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2",
             "persistentvolume": {
               "enabled": false,
@@ -27,25 +27,9 @@ metadata:
               "name": "node-red-svc",
               "type": null
             },
-            "size": 1,
-            "user": {
-              "name": "shraddha",
-              "password": "$2a$08$lkNywjX07FEM4xzGsDXRfOGW80PtQKirmfXRTWHZslOL5zehrbmai",
-              "permission": "read"
-            }
-          }
-        },
-        {
-          "apiVersion": "nodered.com/v1alpha1",
-          "kind": "NodeRedUpgrade",
-          "metadata": {
-            "name": "noderedupgrade"
-          },
-          "spec": {
-            "image": "image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2"
+            "size": 1
           }
         }
-
       ]
     capabilities: Seamless Upgrades
     categories: Developer Tools
@@ -86,15 +70,6 @@ spec:
           name: ''
           version: v1
         - kind: ConfigMap
-          name: ''
-          version: v1
-    - description: Upgrades Node-RED
-      displayname: Node-RED Upgrade
-      kind: NodeRedUpgrade
-      name: noderedupgrades.nodered.com
-      version: v1alpha1
-      resources:
-        - kind: Pod
           name: ''
           version: v1
   displayName: Node-RED Operator

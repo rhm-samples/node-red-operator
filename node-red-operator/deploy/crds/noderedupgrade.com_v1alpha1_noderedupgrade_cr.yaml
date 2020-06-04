@@ -1,6 +1,0 @@
-apiVersion: noderedupgrade.com/v1alpha1
-kind: NodeRedUpgrade
-metadata:
-  name: noderedupgrade
-spec:
-  image: image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2

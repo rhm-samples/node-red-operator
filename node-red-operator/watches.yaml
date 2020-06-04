@@ -5,10 +5,3 @@
   role: nodered
   overrideValues:
     image: $RELATED_IMAGE_NODERED
-
-- version: v1alpha1
-  group: nodered.com
-  kind: NodeRedUpgrade
-  role: noderedupgrade
-  overrideValues:
-    image: $RELATED_IMAGE_NODERED

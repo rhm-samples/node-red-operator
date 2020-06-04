@@ -5,8 +5,6 @@
     namespace: "{{ meta.namespace }}"
     label_selectors:
       - app = node-red-app
-    field_selectors:
-      - status.phase=Running
   register: podlist
  
 - name: upgrade member

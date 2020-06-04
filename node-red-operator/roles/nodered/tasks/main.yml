@@ -79,6 +79,23 @@
               imagePullPolicy: Always
               ports:
                - containerPort: 1880
+              livenessProbe:
+                httpGet:
+                  scheme: HTTP
+                  path: /
+                  port: 1880
+                initialDelaySeconds: 90
+                periodSeconds: 30
+                timeoutSeconds: 5
+              readinessProbe:
+                httpGet:
+                  scheme: HTTP
+                  path: /
+                  port: 1880
+                initialDelaySeconds: 60
+                failureThreshold: 5
+                periodSeconds: 30
+                timeoutSeconds: 5
               volumeMounts: "{{ volumeMounts }}"
             volumes: "{{ volumeNames }}"
 

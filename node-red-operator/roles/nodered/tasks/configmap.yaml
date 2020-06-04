@@ -95,11 +95,6 @@
                        username: "admin",
                        password: "{{ adminpassword }}",
                        permissions: "*"
-                   },
-                   {
-                       username: "{{ user.name}}",
-                       password: "{{ user.password }}",
-                       permissions: "{{ user.permission }}"
                    }]
                },
                // To password protect the node-defined HTTP endpoints (httpNodeRoot), or
