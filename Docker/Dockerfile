@@ -18,11 +18,10 @@ RUN chmod 755 /tmp/remove_native_gpio.sh
 # Install tools, create Node-RED app and data dir, add user and set rights
 RUN set -ex && \
     yum install -y --disableplugin=subscription-manager tzdata iputils nano git openssl openssh-clients && \
-    mkdir -p /usr/src/node-red /data /usr/conf && \
+    mkdir -p /usr/src/node-red /data && \
     adduser -d /usr/src/node-red -M node-red -u 1000 && \
     chown -R node-red:node-red /data && \
-    chown -R node-red:node-red /usr/src/node-red && \
-    chown -R node-red:node-red /usr/conf
+    chown -R node-red:node-red /usr/src/node-red 
 
 # Set work directory
 WORKDIR /usr/src/node-red
@@ -58,7 +57,7 @@ ENV NODE_RED_VERSION=1.0.6 \
     FLOWS=flows.json
 
 # ENV NODE_RED_ENABLE_SAFE_MODE=true    # Uncomment to enable safe start mode (flows not running)
-ENV NODE_RED_ENABLE_PROJECTS=true     # Uncomment to enable projects option
+ENV NODE_RED_ENABLE_PROJECTS=true     
 
 # User configuration directory volume
 VOLUME ["/data"]
@@ -69,4 +68,4 @@ EXPOSE 1880
 # Add a healthcheck (default every 30 secs)
 # HEALTHCHECK CMD curl http://localhost:1880/ || exit 1
 
-ENTRYPOINT ["npm", "start", "--", "--settings", "/usr/conf/settings.js" ]
+ENTRYPOINT ["npm", "start", "--", "--settings", "/data/usr/conf/settings.js" ]
