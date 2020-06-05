@@ -8,6 +8,7 @@ chart:
   version: 0.1.0
   appVersion: 1.0.6
 image: image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2
+newimage: image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2
 imagePullSecrets: []
 service:
   type: null
@@ -17,7 +18,7 @@ route:
  path: node-red
 persistentvolume:
   enabled:  true
-  storageclass: ibmc-block-bronze
+  storageclass: ibmc-block-bronze 
   size: 100Mi
 adminpassword: $2a$08$V4gPANVy34NKRbnUbMv85OKTEvRmlMTdu6Qmcb2Az5LfOMT5aPA9G
 secretkey: c2VjcmV0

@@ -50,8 +50,9 @@
 - name: create config-map
   include_tasks: configmap.yaml
 
-
 - name: deploy node-red
+  vars:
+    newimage:  "{{ lookup('env','RELATED_IMAGE_NODERED') }}"
   k8s:
     definition:
       apiVersion: apps/v1
@@ -64,6 +65,8 @@
           matchLabels:
             app: node-red-app
         replicas: "{{ size }}"
+        strategy:
+          type: Recreate
         template:
           metadata:
             labels:
@@ -75,7 +78,7 @@
               fsGroup: 1000
             containers:
             - name: node-red
-              image: "{{ image }}"
+              image: "{{ newimage }}"
               imagePullPolicy: Always
               ports:
                - containerPort: 1880
@@ -136,6 +139,4 @@
             name: "{{ service.name }}"
           port:
             targetPort: 1880-tcp
-            
-- name: upgrade earlier versions
-  include_tasks: upgrade.yaml
+

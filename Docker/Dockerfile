@@ -28,7 +28,7 @@ WORKDIR /usr/src/node-red
 
 # package.json contains Node-RED NPM module and node dependencies
 COPY package.json .
-RUN yum install -y --disableplugin=subscription-manager udev python36 gcc-c++ make
+RUN yum install -y --disableplugin=subscription-manager udev python36 gcc-c++ make cronie
 #Install nodejs
 RUN curl -sL https://rpm.nodesource.com/setup_12.x | bash -
 RUN yum install -y --disableplugin=subscription-manager nodejs
