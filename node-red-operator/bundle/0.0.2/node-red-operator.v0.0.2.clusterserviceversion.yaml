@@ -14,7 +14,7 @@ metadata:
             "adminpassword": "$2a$08$V4gPANVy34NKRbnUbMv85OKTEvRmlMTdu6Qmcb2Az5LfOMT5aPA9G",
             "image": "image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2",
             "persistentvolume": {
-              "enabled": false,
+              "enabled": true,
               "size": "100Mi",
               "storageclass": "ibmc-block-bronze"
             },

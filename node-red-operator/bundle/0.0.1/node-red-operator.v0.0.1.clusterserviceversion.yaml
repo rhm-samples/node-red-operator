@@ -14,7 +14,7 @@ metadata:
             "image": "registry.connect.redhat.com/ibm-edge/node-red:0.0.1",
             "size": 1,
             "persistentvolume": {
-              "enabled": false,
+              "enabled": true,
               "size": "100Mi",
               "storageclass": "ibmc-block-bronze"
             },

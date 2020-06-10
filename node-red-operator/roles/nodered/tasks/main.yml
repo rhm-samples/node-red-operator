@@ -50,6 +50,9 @@
 - name: create config-map
   include_tasks: configmap.yaml
 
+#- name: upgrade deployment
+#  include_tasks: upgrade.yaml
+
 - name: deploy node-red
   vars:
     newimage:  "{{ lookup('env','RELATED_IMAGE_NODERED') }}"
@@ -67,6 +70,7 @@
         replicas: "{{ size }}"
         strategy:
           type: Recreate
+          rollingUpdate: null
         template:
           metadata:
             labels:
