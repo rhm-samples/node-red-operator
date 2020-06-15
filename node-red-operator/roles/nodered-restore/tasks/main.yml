@@ -1,0 +1,135 @@
+---
+- name: set volume
+  set_fact:
+    volumeMounts:
+      - mountPath: /data
+        name: data
+    volumeNames:
+      - name: data
+        persistentVolumeClaim:
+          claimName:  node-red-pvc
+- name: create ibm-s3-bucket-secrets
+  include_tasks: s3-secrets.yaml
+
+- name: Node-Red  Restore Job
+  vars:
+    image:  "{{ lookup('env','RELATED_IMAGE_NODERED_RESTORE') }}"
+  k8s:
+    definition:
+      apiVersion: batch/v1
+      kind: Job
+      metadata:
+        name: 'nodered-restore-{{ meta.name }}'
+        namespace: '{{ meta.namespace }}'
+      spec:
+        backoffLimit: 0
+        restartPolicy: Never
+        ttlSecondsAfterFinished: 300
+        template:
+          metadata:
+            name: node-red-restore
+          spec:
+            serviceAccountName: node-red-operator
+            securityContext:
+              fsGroup: 1000
+            restartPolicy: Never
+            containers:
+            - name: node-red-restore
+              image: "{{ image }}"
+              imagePullPolicy: Always
+              ports:
+              - containerPort: 1880
+              env:
+              # S3 Bucket Name
+              - name: BUCKET_NAME
+                valueFrom:
+                  secretKeyRef:
+                    name: ibm-s3-bucket-secrets-restore
+                    key: BUCKET_NAME
+              # S3 IBM Storage End point link
+              - name: ENDPOINT
+                valueFrom:
+                  secretKeyRef:
+                    name: ibm-s3-bucket-secrets-restore
+                    key: ENDPOINT
+              # API KEY
+              - name: API_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: ibm-s3-bucket-secrets-restore
+                    key: API_KEY
+              # Token
+              - name: AUTH_ENDPOINT
+                valueFrom:
+                  secretKeyRef:
+                    name: ibm-s3-bucket-secrets-restore
+                    key: AUTH_ENDPOINT
+              # Resource-Instance-Id
+              - name: RESOURCE_CRN
+                valueFrom:
+                  secretKeyRef:
+                    name: ibm-s3-bucket-secrets-restore
+                    key: RESOURCE_CRN
+              # RESTORE_FILE_NAME
+              - name: RESTORE_FILE_NAME
+                value: "{{ restore_file_name }}"
+              volumeMounts: "{{ volumeMounts }}"
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "Checking Node-Red is running......."
+                  nc -z -v -w30 node-red-svc 1880
+                  response=$? # && echo $response
+                  if [ $response != "0" ]; then exit 1; fi
+                  echo "Starting Restore Job ....."
+                  export RESTORE_DIR_PATH="/data/restore-tar/"
+                  mkdir -p $RESTORE_DIR_PATH
+                  python3 /opt/scripts/download-nodered-backup.py
+                  response=$? # && echo $response
+                  if [ $response == "0" ]; then  tar -xvzf $RESTORE_DIR_PATH$RESTORE_FILE_NAME --directory /data/ --no-overwrite-dir && rm -rf $RESTORE_DIR_PATH; else echo "Exiting Container because restore failed" && exit 1 ;  fi
+                  echo "Restore Complete."
+            volumes: "{{ volumeNames }}"
+  register: restoreJob
+
+- name: Wait for Job to Complete
+  k8s_info:
+    kind: Job
+    name: "nodered-restore-{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"   
+  register: jobstatus
+  until: 
+    - "'True' in ( jobstatus | json_query('resources[].status.conditions[].status'))"
+  delay: 3
+  retries: 10
+
+- name: Get Job Status
+  set_fact:
+    status: "{{ jobstatus | json_query('resources[].status.conditions[].type') }}"
+- name: Debug
+  debug:
+    msg: 
+      - "Job Register: '{{ jobstatus }}'"
+      - "set fact status: '{{ status }}'"
+- fail:
+    msg: "Restore Job Has Failed!"
+  when: jobstatus.resources[0].status.failed == 1
+      
+- name: Get list of Node Red pods ++++++++++++++++++++++++++
+  k8s_info:
+    kind: Pod
+    namespace: "{{ meta.namespace }}"
+    label_selectors:
+      - app = node-red-app
+  register: podlist
+- name: Reconcile Pods after Restore Job is successful
+  k8s:
+    state: absent
+    definition:
+      apiVersion: "v1"
+      kind: "Pod"
+      metadata:
+        name: "{{ item.metadata.name }}"
+        namespace: "{{ meta.namespace }}"
+  when: restoreJob.changed and not "Failed" in status
+  loop: "{{ podlist.resources }}"

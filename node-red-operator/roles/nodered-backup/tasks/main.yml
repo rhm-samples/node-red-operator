@@ -1,0 +1,205 @@
+---
+- name: set volume
+  set_fact:
+    volumeMounts:
+      - mountPath: /data
+        name: data
+    volumeNames:
+      - name: data
+        persistentVolumeClaim:
+          claimName:  node-red-pvc
+
+- name: create ibm-s3-bucket-secrets
+  include_tasks: s3-secrets.yaml
+
+- block:
+    - name: Node-Red On-Demand Backup
+      vars:
+        image:  "{{ lookup('env','RELATED_IMAGE_NODERED_BACKUP') }}"
+      k8s:
+        definition:
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: 'node-red-backup1c-{{ meta.name }}'
+            namespace: '{{ meta.namespace }}'
+          spec:
+            backoffLimit: 0
+            restartPolicy: Never
+            ttlSecondsAfterFinished: 300
+            template:
+              metadata:
+                name: node-red-one-time-backup
+              spec:
+                serviceAccountName: node-red-operator
+                securityContext:
+                  fsGroup: 1000
+                restartPolicy: Never
+                containers:
+                - name: node-red-one-time-backup
+                  image: "{{ image }}"
+                  imagePullPolicy: Always
+                  ports:
+                  - containerPort: 1880
+                  env:
+                  # S3 Bucket Name
+                  - name: BUCKET_NAME
+                    valueFrom:
+                      secretKeyRef:
+                        name: ibm-s3-bucket-secrets-backup
+                        key: BUCKET_NAME
+                  # S3 IBM Storage End point link
+                  - name: ENDPOINT
+                    valueFrom:
+                      secretKeyRef:
+                        name: ibm-s3-bucket-secrets-backup
+                        key: ENDPOINT
+                  # API KEY
+                  - name: API_KEY
+                    valueFrom:
+                      secretKeyRef:
+                        name: ibm-s3-bucket-secrets-backup
+                        key: API_KEY
+                  # Token
+                  - name: AUTH_ENDPOINT
+                    valueFrom:
+                      secretKeyRef:
+                        name: ibm-s3-bucket-secrets-backup
+                        key: AUTH_ENDPOINT
+                  # Resource-Instance-Id
+                  - name: RESOURCE_CRN
+                    valueFrom:
+                      secretKeyRef:
+                        name: ibm-s3-bucket-secrets-backup
+                        key: RESOURCE_CRN
+                  # Namespace
+                  - name: NAMESPACE
+                    value: "{{ meta.namespace }}"
+                  volumeMounts: "{{ volumeMounts }}"
+                  command:
+                    - /bin/sh
+                    - -c
+                    - |
+                      echo "Checking if Node-Red is running......."
+                      
+                      nc -z -v -w30 node-red-svc 1880
+                      
+                      response=$? && echo $response
+                      
+                      if [ $response != "0" ]; then exit 1; fi
+                      
+                      mkdir -p /data/backups
+
+                      export BACKUP_DIR_PATH="/data/backups/"
+
+                      export BACKUP_FILE_NAME="node-red-"$NAMESPACE"-`date +"%d-%m-%Y-%H-%M"`.tar.gz"
+                      
+                      tar -zcvf $BACKUP_DIR_PATH$BACKUP_FILE_NAME --exclude='./node_modules' --exclude='./node_modules/*' --exclude='./backups' --exclude='./backups/*' --exclude='./usr' --exclude='./usr/*' --exclude='./restore' --exclude='./restore-tar/*' -C /data/ .
+                      
+                      python3 /opt/scripts/backup-upload.py
+                      
+                      response=$? && echo $response
+                      
+                      if [ $response == "0" ]; then  echo "Backup Complete."; else echo "Exiting Container because backup failed" && exit 1 ;  fi
+                volumes: "{{ volumeNames }}"
+  when: backup.schedule | default('', true) | trim == ''
+
+
+- block:
+    - name: Node-Red Scheduled Backup
+      vars:
+        image:  "{{ lookup('env','RELATED_IMAGE_NODERED_BACKUP') }}"
+      k8s:
+        definition:
+          apiVersion: batch/v1beta1
+          kind: CronJob
+          metadata:
+            name: 'nodered-backup-{{ meta.name }}'
+            namespace: '{{ meta.namespace }}'
+          spec:
+            replias: 1
+            successfulJobsHistoryLimit: 1
+            failedJobsHistoryLimit: 1
+            schedule: "{{ backup.schedule }}"
+            jobTemplate:
+              spec:
+                #backoffLimit: 1
+                template:
+                  spec:
+                    imagePullSecrets:
+                    serviceAccountName: node-red-operator
+                    restartPolicy: OnFailure
+                    securityContext:
+                      fsGroup: 1000
+                    containers:
+                    - name: node-red-backup
+                      image: "{{ image }}"
+                      imagePullPolicy: Always
+                      ports:
+                       - containerPort: 1880
+                      env:
+                      # S3 Bucket Name
+                      - name: BUCKET_NAME
+                        valueFrom:
+                          secretKeyRef:
+                            name: ibm-s3-bucket-secrets-backup
+                            key: BUCKET_NAME
+                      # S3 IBM Storage End point link
+                      - name: ENDPOINT
+                        valueFrom:
+                          secretKeyRef:
+                            name: ibm-s3-bucket-secrets-backup
+                            key: ENDPOINT
+                      # API KEY
+                      - name: API_KEY
+                        valueFrom:
+                          secretKeyRef:
+                            name: ibm-s3-bucket-secrets-backup
+                            key: API_KEY
+                      # Token
+                      - name: AUTH_ENDPOINT
+                        valueFrom:
+                          secretKeyRef:
+                            name: ibm-s3-bucket-secrets-backup
+                            key: AUTH_ENDPOINT
+                      # Resource-Instance-Id
+                      - name: RESOURCE_CRN
+                        valueFrom:
+                          secretKeyRef:
+                            name: ibm-s3-bucket-secrets-backup
+                            key: RESOURCE_CRN
+                      # Namespace
+                      - name: NAMESPACE
+                        value: "{{ meta.namespace }}"
+                      volumeMounts: "{{ volumeMounts }}"
+                      command:
+                        - /bin/sh
+                        - -c
+                        - |
+                          echo "Checking if Node-Red is running......."
+                          
+                          nc -z -v -w30 node-red-svc 1880
+                          
+                          response=$? && echo $response
+                          
+                          if [ $response != "0" ]; then exit 1; fi
+                          
+                          mkdir -p /data/backups
+
+                          export BACKUP_DIR_PATH="/data/backups/"
+
+                          export BACKUP_FILE_NAME="node-red-"$NAMESPACE"-`date +"%d-%m-%Y-%H-%M"`.tar.gz"
+                          
+                          tar -zcvf $BACKUP_DIR_PATH$BACKUP_FILE_NAME --exclude='./node_modules' --exclude='./node_modules/*' --exclude='./backups' --exclude='./backups/*' --exclude='./usr' --exclude='./usr/*' --exclude='./restore' --exclude='./restore-tar/*' -C /data/ .
+                          response=$? # && echo $response
+
+                          if [ $response != "0" ]; then  echo "Exiting Container because backup failed" && exit 1 ;  fi
+                          
+                          python3 /opt/scripts/backup-upload.py
+                          
+                          response=$? # && echo $response
+                          
+                          if [ $response == "0" ]; then  echo "Backup Complete."; else echo "Exiting Container because backup failed" && exit 1 ;  fi
+                          
+                    volumes: "{{ volumeNames }}"
+  when: backup.schedule | default('', true) | trim != ''

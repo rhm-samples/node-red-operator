@@ -1,0 +1,39 @@
+FROM registry.access.redhat.com/ubi8/ubi:latest
+MAINTAINER IBM-Edge edge@us.ibm.com
+LABEL name="Node Red" \
+      maintainer="edge@us.ibm.com" \
+      vendor="node-red" \
+      version="1.0.6" \
+      release="1" \
+      summary="Node Red v1.0.6 setup on ubi8" \
+      description="Node-RED is a programming tool for wiring together hardware devices, APIs and online services in new and interesting ways."
+#Copy license
+COPY LICENSE /licenses/license.txt
+
+ENV USER_NAME node-red 
+ENV SCRIPTS /opt/scripts
+#ENV BUCKET_NAME="alkesh-s3-node-red"
+#ENV ENDPOINT="https://s3.private.jp-tok.cloud-object-storage.appdomain.cloud"
+#ENV API_KEY="D2rHxdkuYcJ3wSCufiha_xjDJr2C8ZwJwho5Q-P4mANx"
+#ENV AUTH_ENDPOINT="https://iam.cloud.ibm.com/identity/token"
+#ENV RESOURCE_CRN="crn:v1:bluemix:public:cloud-object-storage:global:a/aeb2e9f6f29f41b99ce8e98c1c73e611:758a7425-ef7b-4628-b5c0-2c15ef8c03e0::"
+#ENV NAMESPACE="node-red-testing"
+
+RUN adduser $USER_NAME && \
+    mkdir $SCRIPTS && \
+    chown $USER_NAME $SCRIPTS && \
+    chgrp -R 0 /opt/scripts && chmod -R g+rwX /opt/scripts
+    #mkdir -p  /data && \
+    #chown -R node-red:node-red /data && \
+    #mkdir /data/backups && \
+    #chown -R node-red:node-red /data/backups
+    
+WORKDIR $SCRIPTS
+
+COPY scripts/* /opt/scripts/
+RUN chmod a+x /opt/scripts/*.py && \
+    chown $USER_NAME:$USER_NAME /opt/scripts/* && \
+    yum install -y --disableplugin=subscription-manager nc python36 && \
+    pip3 install ibm-cos-sdk
+USER node-red
+#ENTRYPOINT ["/bin/bash", "/opt/scripts/backup-init.sh"]

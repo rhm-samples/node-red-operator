@@ -1,0 +1,18 @@
+apiVersion: nodered.com/v1alpha1
+kind: NodeRedRestore
+metadata:
+  name: example-noderedrestore-2
+spec:
+  restore_file_name: "node-red-node-red-testing-2-11-06-2020-10-58.tar.gz"
+  
+  ibm_s3:
+    bucket_name: "alkesh-s3-node-red"
+    
+    endpoint: "https://s3.private.jp-tok.cloud-object-storage.appdomain.cloud"
+    
+    api_key: "D2rHxdkuYcJ3wSCufiha_xjDJr2C8ZwJwho5Q-P4mANx"
+    
+    auth_endpoint: "https://iam.cloud.ibm.com/identity/token"
+    
+    resource_crn: "crn:v1:bluemix:public:cloud-object-storage:global:a/aeb2e9f6f29f41b99ce8e98c1c73e611:758a7425-ef7b-4628-b5c0-2c15ef8c03e0::"
+  
