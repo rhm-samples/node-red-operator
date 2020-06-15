@@ -27,24 +27,24 @@
               claimName:  node-red-pvc
   when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true
 
-- name: create pvc
-  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true
-  k8s:
-     definition:
-       apiVersion: v1
-       kind: PersistentVolumeClaim
-       metadata:
-         name: node-red-pvc
-         namespace: "{{ meta.namespace }}"
-         labels:
-           app: node-red-app
-       spec:
-         storageClassName: "{{ persistentvolume.storageclass }}"
-         accessModes:
-           - ReadWriteOnce
-         resources:
-           requests:
-             storage: "{{ persistentvolume.size | quote }}"
+#- name: create pvc
+#  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true
+#  k8s:
+#     definition:
+#       apiVersion: v1
+#       kind: PersistentVolumeClaim
+#       metadata:
+#         name: node-red-pvc
+#         namespace: "{{ meta.namespace }}"
+#         labels:
+#           app: node-red-app
+#       spec:
+#         storageClassName: "{{ persistentvolume.storageclass }}"
+#         accessModes:
+#           - ReadWriteMany
+#         resources:
+#           requests:
+#             storage: "{{ persistentvolume.size | quote }}"
 
 
 - name: create config-map
@@ -91,7 +91,7 @@
                   scheme: HTTP
                   path: /
                   port: 1880
-                initialDelaySeconds: 90
+                initialDelaySeconds: 30
                 periodSeconds: 30
                 timeoutSeconds: 5
               readinessProbe:
@@ -99,11 +99,25 @@
                   scheme: HTTP
                   path: /
                   port: 1880
-                initialDelaySeconds: 60
+                initialDelaySeconds: 30
                 failureThreshold: 5
                 periodSeconds: 30
                 timeoutSeconds: 5
               volumeMounts: "{{ volumeMounts }}"
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  
+                  #(crontab -l 2>/dev/null; echo '*/2 * * * * if [ -f "/data/restore_done.sh" ]; then echo "Restoring......." && cd /data/  && npm install && cd /usr/src/node-red/ && npm start -- --settings /data/usr/conf/settings.js && rm -rf /data/restore_done.sh && echo "Restore Complete"; fi') | crontab -
+                  
+                  #cd /usr/src/node-red/ && npm start -- --settings /data/usr/conf/settings.js 
+                  
+                  echo "Installing Packages ++++++++++++++++"
+                  if [ -f "/data/package.json" ]; then cd /data/  && npm install; fi
+                  echo "Installed +++++++++++++++++++"
+                  cd /usr/src/node-red/ && npm start -- --settings /data/usr/conf/settings.js 
+
             volumes: "{{ volumeNames }}"
 
 - name: create service

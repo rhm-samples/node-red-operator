@@ -113,7 +113,7 @@
       - "set fact status: '{{ status }}'"
 - fail:
     msg: "Restore Job Has Failed!"
-  when: jobstatus.resources[0].status.failed == 1
+  when: jobstatus.resources[0].status.failed is defined and  jobstatus.resources[0].status.failed == 1
       
 - name: Get list of Node Red pods ++++++++++++++++++++++++++
   k8s_info:
