@@ -27,6 +27,21 @@
               claimName:  node-red-pvc
   when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true
 
+- name: Fail Deployment if PVC Storage class is empty
+  fail: 
+    msg: "NodeRed Application cannot be created as StorageClass value for Persistent Volume Claim is not provided.Please use a PVC with ReadWriteMany AccessMode type"
+  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true and persistentvolume.storageclass is not defined
+- name: Fail Deployment if PVC AccessMode for PVC is empty
+  fail:
+    msg: "NodeRed Application cannot be created as AccessMode value for Persistent Volume Claim is not provided.Please use a PVC with ReadWriteMany AccessMode type" 
+  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true and persistentvolume.accessmode is not defined
+
+- name: If user has opted for PV , check its Accessmode type. If type is not RWM fail deployment
+  fail:
+    msg: "NodeRed Application cannot be created with Persistent Volume Claim of type ReadWriteOnce or ReadOnly. Please use a Storage of type ReadWriteMany !"
+  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true and persistentvolume.storageclass is defined and persistentvolume.accessmode is defined and "ReadWriteMany" not in persistentvolume.accessmode
+
+  
 - name: create pvc
   when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true
   k8s:
@@ -41,7 +56,7 @@
        spec:
          storageClassName: "{{ persistentvolume.storageclass }}"
          accessModes:
-           - ReadWriteMany
+           - "{{ persistentvolume.accessmode }}"
          resources:
            requests:
              storage: "{{ persistentvolume.size | quote }}"

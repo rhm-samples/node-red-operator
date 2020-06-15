@@ -16,7 +16,8 @@ metadata:
             "persistentvolume": {
               "enabled": true,
               "size": "100Mi",
-              "storageclass": "ibmc-block-bronze"
+              "storageclass": "ibmc-file-silver-gid",
+              "accessmode":"ReadWriteMany"
             },
             "route": {
               "enabled": true,
@@ -346,7 +347,8 @@ spec:
     route.enabled                  | true or false defpending on if route to port 1880 is needed
     route.path                     | Path of the Node-RED URL
     persistentvolume.enabled       | If volume is to be mounted at /data
-    persistentvolume.storageclass  | Storage class of the Persistent volume
+    persistentvolume.storageclass  | Storage class of the Persistent Volume of type ReadWriteMany 
+    persistentvolume.accessmode    | The accessMode of the Persistent Volume. This should be of type ReadWriteMany.
     persistentvolume.size          | Size of the volume in Mi or Gi
     adminpassword                  | To password protect the Node-RED editor and admin API. 
                                    | Give the bcrypt hash of the password. 
