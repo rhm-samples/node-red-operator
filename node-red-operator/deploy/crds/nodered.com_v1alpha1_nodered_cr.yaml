@@ -13,7 +13,7 @@ spec:
     path: node-red
   persistentvolume:
     enabled: false
-    storageclass: ibmc-block-bronze
+    storageclass: ibmc-file-silver-gid
     size: 100Mi
   adminpassword: $2a$08$V4gPANVy34NKRbnUbMv85OKTEvRmlMTdu6Qmcb2Az5LfOMT5aPA9G
   secretkey: c2VjcmV0

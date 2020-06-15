@@ -1,4 +1,28 @@
 ---
+- name: Get PVC
+  k8s_info:
+    kind: PersistentVolumeClaim
+    name: "node-red-pvc"
+    namespace: "{{ meta.namespace }}"
+  register: nodered_pv
+
+- name: Check PVC Exists
+  set_fact:
+    pvc_bound: "{{ nodered_pv | json_query('resources[].status.phase') }}"
+    pvc_rwm: "{{ nodered_pv | json_query('resources[].spec.accessModes') }}"
+- name: Debug
+  debug:
+    msg:
+      - "PVC Query: '{{ nodered_pv }}'"
+      - "PVC status: '{{ pvc_bound }}'"
+      - "PVC Access Mode: '{{ pvc_rwm }}'"
+- fail:
+    msg: "Backup Request will be failed as PVC doesnt exist !"
+  when: nodered_pv.resources | length == 0
+- fail:
+    msg: "Backup Request will be failed as PVC requirement is not met!"
+  when: nodered_pv.resources[0].status.phase is defined and not "Bound" in nodered_pv.resources[0].status.phase and nodered_pv.resources[0].spec.accessModes is defined and not "ReadWriteMany" in nodered_pv.resources[0].spec.accessModes[0]
+
 - name: set volume
   set_fact:
     volumeMounts:
@@ -84,7 +108,7 @@
                       
                       nc -z -v -w30 node-red-svc 1880
                       
-                      response=$? && echo $response
+                      response=$?
                       
                       if [ $response != "0" ]; then exit 1; fi
                       
@@ -94,11 +118,13 @@
 
                       export BACKUP_FILE_NAME="node-red-"$NAMESPACE"-`date +"%d-%m-%Y-%H-%M"`.tar.gz"
                       
+                      echo "Creating Backup File ....."
+                      
                       tar -zcvf $BACKUP_DIR_PATH$BACKUP_FILE_NAME --exclude='./node_modules' --exclude='./node_modules/*' --exclude='./backups' --exclude='./backups/*' --exclude='./usr' --exclude='./usr/*' --exclude='./restore' --exclude='./restore-tar/*' -C /data/ .
                       
                       python3 /opt/scripts/backup-upload.py
                       
-                      response=$? && echo $response
+                      response=$?
                       
                       if [ $response == "0" ]; then  echo "Backup Complete."; else echo "Exiting Container because backup failed" && exit 1 ;  fi
                 volumes: "{{ volumeNames }}"

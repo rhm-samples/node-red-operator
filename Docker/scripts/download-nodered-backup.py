@@ -24,11 +24,8 @@ def get_buckets():
 	bucket_exist = 0
 	try:
 		buckets = cos.buckets.all()
-		print(buckets)
-		print(type(buckets))
 		for bucket in buckets:
 			print("Bucket Name: {0}".format(bucket.name))
-			print(type(bucket))
 			if os.environ['BUCKET_NAME'] == str(bucket.name):
 				bucket_exist = 1
 	except ClientError as be:
@@ -59,7 +56,6 @@ def download_file_cos(bucket_name, object_name, download_file_path):
 		print("Restore failed")
 		print(Exception, e)
 		sys.exit(1)
-		print("Restore exit")
 	else:
 		print('File Downloaded')
 

@@ -1,4 +1,27 @@
 ---
+- name: Get PVC
+  k8s_info:
+    kind: PersistentVolumeClaim
+    name: "node-red-pvc"
+    namespace: "{{ meta.namespace }}"
+  register: nodered_pv
+
+- name: Check PVC Exists
+  set_fact:
+    pvc_bound: "{{ nodered_pv | json_query('resources[].status.phase') }}"
+    pvc_rwm: "{{ nodered_pv | json_query('resources[].spec.accessModes') }}"
+- name: Debug
+  debug:
+    msg:
+      - "PVC Query: '{{ nodered_pv }}'"
+      - "PVC status: '{{ pvc_bound }}'"
+      - "PVC Access Mode: '{{ pvc_rwm }}'"
+- fail:
+    msg: "Restore Request will be failed as PVC doesnt exist !"
+  when: nodered_pv.resources | length == 0
+- fail:
+    msg: "Restore Request will be failed as PVC requirement not met !"
+  when: nodered_pv.resources[0].status.phase is defined and not "Bound" in nodered_pv.resources[0].status.phase and nodered_pv.resources[0].spec.accessModes is defined and not "ReadWriteMany" in nodered_pv.resources[0].spec.accessModes[0]
 - name: set volume
   set_fact:
     volumeMounts:
@@ -87,7 +110,7 @@
                   mkdir -p $RESTORE_DIR_PATH
                   python3 /opt/scripts/download-nodered-backup.py
                   response=$? # && echo $response
-                  if [ $response == "0" ]; then  tar -xvzf $RESTORE_DIR_PATH$RESTORE_FILE_NAME --directory /data/ --no-overwrite-dir && rm -rf $RESTORE_DIR_PATH; else echo "Exiting Container because restore failed" && exit 1 ;  fi
+                  if [ $response == "0" ]; then echo "Extracting Data...." && tar -xvzf $RESTORE_DIR_PATH$RESTORE_FILE_NAME --directory /data/ --no-overwrite-dir && rm -rf $RESTORE_DIR_PATH; else echo "Exiting Container because restore failed" && exit 1 ;  fi
                   echo "Restore Complete."
             volumes: "{{ volumeNames }}"
   register: restoreJob

@@ -22,11 +22,8 @@ def get_buckets():
         bucket_exist = 0
         try:
                 buckets = cos.buckets.all()
-                print(buckets)
-                print(type(buckets))
                 for bucket in buckets:
                         print("Bucket Name: {0}".format(bucket.name))
-                        print(type(bucket))
                         if os.environ['BUCKET_NAME'] == str(bucket.name):
                                 bucket_exist = 1
         except ClientError as be:
@@ -71,7 +68,6 @@ def upload_large_file(bucket_name, item_name, file_path):
         except Exception as e:
                 print("Unable to complete large file upload: {0}".format(e))
                 error_occured = error_occured + 1
-                print (error_occured)
         finally:
                 transfer_mgr.shutdown()
                 if error_occured != 0 :
