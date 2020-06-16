@@ -3,14 +3,7 @@ kind: NodeRed
 metadata:
   name: nodered
 spec:
-  image: image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2
   size: 1
-  service:
-    type: null
-    name: node-red-svc
-  route:
-    enabled: true
-    path: node-red
   persistentvolume:
     enabled: false
     storageclass: ibmc-file-silver-gid

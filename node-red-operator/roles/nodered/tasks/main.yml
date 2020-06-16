@@ -27,21 +27,31 @@
               claimName:  node-red-pvc
   when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true
 
-- name: Fail Deployment if PVC Storage class is empty
-  fail: 
-    msg: "NodeRed Application cannot be created as StorageClass value for Persistent Volume Claim is not provided.Please use a PVC with ReadWriteMany AccessMode type"
-  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true and persistentvolume.storageclass is not defined
-- name: Fail Deployment if PVC AccessMode for PVC is empty
+- name: Debug
+  debug:
+    msg:
+      - " Admin password: '{{ adminpassword }}'"
+      - " Storage Class: '{{ persistentvolume.storageclass }}'"
+      - " Access Mode: '{{ persistentvolume.accessmode }}'"
+      - " Size: '{{ persistentvolume.size }}'"
+- name: Fail if Admin Password  is empty
   fail:
-    msg: "NodeRed Application cannot be created as AccessMode value for Persistent Volume Claim is not provided.Please use a PVC with ReadWriteMany AccessMode type" 
-  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true and persistentvolume.accessmode is not defined
+    msg: "AdminPassword is empty.Please provide an admin password***********"
+  when: adminpassword | default('', true) | trim == ''
 
-- name: If user has opted for PV , check its Accessmode type. If type is not RWM fail deployment
+- name : Fail if Storage Class is empty
   fail:
-    msg: "NodeRed Application cannot be created with Persistent Volume Claim of type ReadWriteOnce or ReadOnly. Please use a Storage of type ReadWriteMany !"
-  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true and persistentvolume.storageclass is defined and persistentvolume.accessmode is defined and "ReadWriteMany" not in persistentvolume.accessmode
+    msg: "Please provide a storage class for PV creation********************"
+  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true and (persistentvolume.storageclass | default('', true) | trim == '')
 
-  
+- name: Fail if AccessMode is empty
+  fail:
+    msg: "Please provide an AccessMode for PV creation******************"
+  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true and (persistentvolume.accessmode | default('', true) | trim == '')  
+- name: Fail is PV size is empty
+  fail:
+    msg: "Please provide the PV size. ***************"
+  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true and (persistentvolume.size | default('', true) | trim == '')
 - name: create pvc
   when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true
   k8s:
@@ -136,14 +146,13 @@
         apiVersion: v1
         kind: Service
         metadata:
-          name: "{{ service.name }}"
+          name: node-red-svc
           namespace: "{{ meta.namespace }}"
           labels:
             app: node-red-app
         spec:
           selector:
               app: node-red-app
-          type: "{{ service.type }}"
           ports:
             - name: 1880-tcp
               protocol: TCP
@@ -151,20 +160,19 @@
               targetPort: 1880
 
 - name: create route
-  when: route.enabled is defined and route.enabled|bool == true
   k8s:
     definition:
         apiVersion: route.openshift.io/v1
         kind: Route
         metadata:
-          name: "{{ route.path }}"
+          name: node-red
           namespace: "{{ meta.namespace }}"
           labels:
             app: node-red-app
         spec:
           to:
             kind: Service
-            name: "{{ service.name }}"
+            name: node-red-svc
           port:
             targetPort: 1880-tcp
 

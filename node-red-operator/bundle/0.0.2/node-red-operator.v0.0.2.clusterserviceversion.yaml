@@ -12,22 +12,13 @@ metadata:
           },
           "spec": {
             "adminpassword": "$2a$08$V4gPANVy34NKRbnUbMv85OKTEvRmlMTdu6Qmcb2Az5LfOMT5aPA9G",
-            "image": "image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.2",
             "persistentvolume": {
               "enabled": true,
               "size": "100Mi",
               "storageclass": "ibmc-file-silver-gid",
               "accessmode":"ReadWriteMany"
             },
-            "route": {
-              "enabled": true,
-              "path": "node-red"
-            },
             "secretkey": "c2VjcmV0",
-            "service": {
-              "name": "node-red-svc",
-              "type": null
-            },
             "size": 1
           }
         },
@@ -340,12 +331,8 @@ spec:
     -----
       Spec                         |            Details
     -------------------------------|-----------------------------
-    image                          | Node-RED application image
     size                           | Number of instances of Node-RED
     imagePullSecrets               | Secret if the image is private
-    service.type                   | NodePort, ClusterIP, null
-    route.enabled                  | true or false defpending on if route to port 1880 is needed
-    route.path                     | Path of the Node-RED URL
     persistentvolume.enabled       | If volume is to be mounted at /data
     persistentvolume.storageclass  | Storage class of the Persistent Volume of type ReadWriteMany 
     persistentvolume.accessmode    | The accessMode of the Persistent Volume. This should be of type ReadWriteMany.
@@ -360,8 +347,11 @@ spec:
                                    | If you want to disable encryption of credentials, set this property to 'false'.
         
     ----------
+    
+    
+    **NOTE** For Backup feature its required that the NodeRed is deployed with a Persistent Volume of type RedWriteMany.
+    
     ----------
-
     **Node-RED Backup CR Spec Details**
     -----
       Spec                         |            Details
@@ -381,7 +371,10 @@ spec:
     ibm_s3.resource_crn            | Bucket Rescource
         
     ----------
-
+    
+   
+    **NOTE** For Restore feature its required that the NodeRed is deployed with a Persistent Volume of type RedWriteMany.
+    
     ----------
 
     **Node-RED Restore CR Spec Details**
