@@ -59,10 +59,10 @@ metadata:
           }
         }
       ]
-    capabilities: Seamless Upgrades
+    capabilities: Full Lifecycle
     categories: Developer Tools
     certified: "false"
-    containerImage: image-registry.openshift-image-registry.svc:5000/node-red-testing/node-red-operator:0.0.1
+    containerImage: registry.connect.redhat.com/ibm-edge/node-red:0.0.2
     createdAt: "2020-05-29T12:00:00Z"
     description: Node-RED is a programming tool for wiring together hardware devices, APIs and online services in new and interesting ways.
     repository: https://github.com/rhm-samples/node-red-operator/
@@ -167,12 +167,12 @@ spec:
                 - name: ANSIBLE_GATHERING
                   value: explicit
                 - name: RELATED_IMAGE_NODERED
-                  value: image-registry.openshift-image-registry.svc:5000/node-red-testing/node-red:0.0.2
+                  value: registry.connect.redhat.com/ibm-edge/node-red:0.0.2
                 - name: RELATED_IMAGE_NODERED_BACKUP
-                  value: image-registry.openshift-image-registry.svc:5000/node-red-testing/nodered-backup-restore:0.2
+                  value: registry.connect.redhat.com/ibm-edge/node-red-backup-restore:v0.0.1
                 - name: RELATED_IMAGE_NODERED_RESTORE
-                  value: image-registry.openshift-image-registry.svc:5000/node-red-testing/nodered-backup-restore:0.2
-                image: image-registry.openshift-image-registry.svc:5000/node-red-testing/node-red-operator:0.0.1
+                  value: registry.connect.redhat.com/ibm-edge/node-red-backup-restore:v0.0.1
+                image:  registry.connect.redhat.com/ibm-edge/node-red-operator:0.0.2
                 imagePullPolicy: Always
                 name: node-red-operator
                 resources: {}
