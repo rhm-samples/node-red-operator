@@ -1,0 +1,18 @@
+apiVersion: nodered.com/v1alpha1
+kind: NodeRedBackup
+metadata:
+  name: noderedbackup
+spec:
+  backup:
+    schedule: null 
+  
+  ibm_s3:
+    bucket_name: null
+    
+    endpoint: null
+    
+    api_key: null
+    
+    auth_endpoint: null
+    
+    resource_crn: null

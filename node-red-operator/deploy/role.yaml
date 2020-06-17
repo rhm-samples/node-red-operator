@@ -2,8 +2,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   creationTimestamp: null
-  name: node-red-ansible-operator
-  namespace: demo-atomic
+  name: node-red-operator
 rules:
 - apiGroups:
   - ""
@@ -49,7 +48,7 @@ rules:
 - apiGroups:
   - apps
   resourceNames:
-  - node-red-ansible-operator
+  - node-red-operator
   resources:
   - deployments/finalizers
   verbs:
@@ -71,6 +70,7 @@ rules:
   - nodered.com
   resources:
   - '*'
+  - reconfigurenoderedsettings
   verbs:
   - create
   - delete
@@ -83,5 +83,12 @@ rules:
   - route.openshift.io
   resources:
   - routes
+  verbs:
+  - '*'
+- apiGroups:
+  - batch
+  resources:
+  - cronjobs
+  - jobs
   verbs:
   - '*'

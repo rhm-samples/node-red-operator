@@ -1,12 +1,11 @@
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: node-red-ansible-operator
+  name: node-red-operator
 subjects:
 - kind: ServiceAccount
   name: node-red-operator
-  namespace: demo-atomic 
 roleRef:
   kind: Role
-  name: node-red-ansible-operator
+  name: node-red-operator
   apiGroup: rbac.authorization.k8s.io

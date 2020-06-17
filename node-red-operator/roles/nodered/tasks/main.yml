@@ -3,7 +3,7 @@
 - name: set default volumes
   set_fact:
     volumeMounts:
-      - mountPath: /usr/conf
+      - mountPath: /data/usr/conf
         name: config-volume
     volumeNames:
       - configMap:
@@ -14,7 +14,7 @@
     - name: set volume
       set_fact:
         volumeMounts:
-          - mountPath: /usr/conf
+          - mountPath: /data/usr/conf
             name: config-volume
           - mountPath: /data
             name: data
@@ -27,6 +27,31 @@
               claimName:  node-red-pvc
   when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true
 
+- name: Debug
+  debug:
+    msg:
+      - " Admin password: '{{ adminpassword }}'"
+      - " Storage Class: '{{ persistentvolume.storageclass }}'"
+      - " Access Mode: '{{ persistentvolume.accessmode }}'"
+      - " Size: '{{ persistentvolume.size }}'"
+- name: Fail if Admin Password  is empty
+  fail:
+    msg: "AdminPassword is empty.Please provide an admin password***********"
+  when: adminpassword | default('', true) | trim == ''
+
+- name : Fail if Storage Class is empty
+  fail:
+    msg: "Please provide a storage class for PV creation********************"
+  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true and (persistentvolume.storageclass | default('', true) | trim == '')
+
+- name: Fail if AccessMode is empty
+  fail:
+    msg: "Please provide an AccessMode for PV creation******************"
+  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true and (persistentvolume.accessmode | default('', true) | trim == '')  
+- name: Fail is PV size is empty
+  fail:
+    msg: "Please provide the PV size. ***************"
+  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true and (persistentvolume.size | default('', true) | trim == '')
 - name: create pvc
   when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true
   k8s:
@@ -41,7 +66,7 @@
        spec:
          storageClassName: "{{ persistentvolume.storageclass }}"
          accessModes:
-           - ReadWriteOnce
+           - "{{ persistentvolume.accessmode }}"
          resources:
            requests:
              storage: "{{ persistentvolume.size | quote }}"
@@ -50,8 +75,12 @@
 - name: create config-map
   include_tasks: configmap.yaml
 
+#- name: upgrade deployment
+#  include_tasks: upgrade.yaml
 
 - name: deploy node-red
+  vars:
+    newimage:  "{{ lookup('env','RELATED_IMAGE_NODERED') }}"
   k8s:
     definition:
       apiVersion: apps/v1
@@ -64,6 +93,9 @@
           matchLabels:
             app: node-red-app
         replicas: "{{ size }}"
+        strategy:
+          type: Recreate
+          rollingUpdate: null
         template:
           metadata:
             labels:
@@ -75,11 +107,37 @@
               fsGroup: 1000
             containers:
             - name: node-red
-              image: "{{ image }}"
+              image: "{{ newimage }}"
               imagePullPolicy: Always
               ports:
                - containerPort: 1880
+              livenessProbe:
+                httpGet:
+                  scheme: HTTP
+                  path: /
+                  port: 1880
+                initialDelaySeconds: 30
+                periodSeconds: 30
+                timeoutSeconds: 5
+              readinessProbe:
+                httpGet:
+                  scheme: HTTP
+                  path: /
+                  port: 1880
+                initialDelaySeconds: 30
+                failureThreshold: 5
+                periodSeconds: 30
+                timeoutSeconds: 5
               volumeMounts: "{{ volumeMounts }}"
+              command:
+                - /bin/sh
+                - -c
+                - | 
+                  
+                  if [ -f "/data/package.json" ]; then echo "Installing Packages....." && cd /data/  && npm install && echo "Installed...."; fi
+                  
+                  cd /usr/src/node-red/ && npm start -- --settings /data/usr/conf/settings.js 
+
             volumes: "{{ volumeNames }}"
 
 - name: create service
@@ -88,14 +146,13 @@
         apiVersion: v1
         kind: Service
         metadata:
-          name: "{{ service.name }}"
+          name: node-red-svc
           namespace: "{{ meta.namespace }}"
           labels:
             app: node-red-app
         spec:
           selector:
               app: node-red-app
-          type: "{{ service.type }}"
           ports:
             - name: 1880-tcp
               protocol: TCP
@@ -103,20 +160,19 @@
               targetPort: 1880
 
 - name: create route
-  when: route.enabled is defined and route.enabled|bool == true
   k8s:
     definition:
         apiVersion: route.openshift.io/v1
         kind: Route
         metadata:
-          name: "{{ route.path }}"
+          name: node-red
           namespace: "{{ meta.namespace }}"
           labels:
             app: node-red-app
         spec:
           to:
             kind: Service
-            name: "{{ service.name }}"
+            name: node-red-svc
           port:
             targetPort: 1880-tcp
-            
+

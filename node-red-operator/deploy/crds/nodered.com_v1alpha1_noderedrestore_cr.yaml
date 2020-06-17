@@ -1,0 +1,17 @@
+apiVersion: nodered.com/v1alpha1
+kind: NodeRedRestore
+metadata:
+  name: noderedrestore
+spec:
+  restore_file_name: null
+  
+  ibm_s3:
+    bucket_name: null
+    
+    endpoint: null
+    
+    api_key: null
+    
+    auth_endpoint: null
+    
+    resource_crn: null
