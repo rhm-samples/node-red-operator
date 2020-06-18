@@ -19,3 +19,8 @@
   role: nodered-restore
   overrideValues:
     image: $RELATED_IMAGE_NODERED_RESTORE
+    
+- version: v1alpha1
+  group: nodered.com
+  kind: NodeRedConfig
+  role: nodered-config

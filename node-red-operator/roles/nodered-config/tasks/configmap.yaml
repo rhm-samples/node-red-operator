@@ -25,9 +25,19 @@
                        password: "{{ adminpassword }}",
                        permissions: "*"
                    }
+                   {% for user in otherusers %}
+                      ,{
+                        username: "{{ user.username }}",
+                        password: "{{ user.password }}",
+                        permissions: "{{ user.permissions }}"
+                       }
+                    {% endfor %}
                    ]
                },
                functionGlobalContext: {
+                 {% for node in functionglobalcontext %}
+                   "{{ functionglobalcontext }}"
+                 {% endfor %}
                },
                exportGlobalContextKeys: false,
                logging: {

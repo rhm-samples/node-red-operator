@@ -1,0 +1,18 @@
+apiVersion: nodered.com/v1alpha1
+kind: NodeRedConfig
+metadata:
+  name: noderedconfig
+spec:
+  flowfilename:
+  functionglobalcontext: 
+    - os:require('os')
+    - jfive:require("johnny-five")
+    - j5board:require("johnny-five").Board({repl:false})
+  otherusers:
+    - username: "shraddha"
+      password: $2a$08$V4gPANVy34NKRbnUbMv85OKTEvRmlMTdu6Qmcb2Az5LfOMT5aPA9G
+      permissions: "read"
+    - username: "alkesh"
+      password: $2a$08$V4gPANVy34NKRbnUbMv85OKTEvRmlMTdu6Qmcb2Az5LfOMT5aPA9G
+      permissions: "*"
+  
