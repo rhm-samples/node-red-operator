@@ -137,15 +137,6 @@
                 periodSeconds: 30
                 timeoutSeconds: 5
               volumeMounts: "{{ volumeMounts }}"
-              command:
-                - /bin/sh
-                - -c
-                - | 
-                  
-                  if [ -f "/data/package.json" ]; then echo "Installing Packages....." && cd /data/  && npm install && echo "Installed...."; fi
-                  
-                  cd /usr/src/node-red/ && npm start -- --settings /data/usr/conf/settings.js 
-
             volumes: "{{ volumeNames }}"
 
 - name: create service

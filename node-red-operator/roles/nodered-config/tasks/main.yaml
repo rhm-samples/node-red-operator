@@ -1,3 +1,22 @@
 ---
 - name: update config-map
   include_tasks: configmap.yaml
+  
+- name: Get list of Node Red pods
+  k8s_info:
+    kind: Pod
+    namespace: "{{ meta.namespace }}"
+    label_selectors:
+      - app = node-red-app
+  register: podlist
+  
+- name: Reconcile Pods after changing configmap
+  k8s:
+    state: absent
+    definition:
+      apiVersion: "v1"
+      kind: "Pod"
+      metadata:
+        name: "{{ item.metadata.name }}"
+        namespace: "{{ meta.namespace }}"
+  loop: "{{ podlist.resources }}"
