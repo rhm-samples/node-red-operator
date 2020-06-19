@@ -68,4 +68,8 @@ EXPOSE 1880
 # Add a healthcheck (default every 30 secs)
 # HEALTHCHECK CMD curl http://localhost:1880/ || exit 1
 
+#Install dependencies if any
+RUN [ -f "/data/package.json" ] && { cd /data ; npm install; }
+
+#Start Node-RED
 ENTRYPOINT ["npm", "start", "--", "--settings", "/data/usr/conf/settings.js" ]
