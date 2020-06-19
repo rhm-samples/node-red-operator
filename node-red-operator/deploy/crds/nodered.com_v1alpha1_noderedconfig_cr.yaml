@@ -15,4 +15,5 @@ spec:
     - username: "alkesh"
       password: $2a$08$V4gPANVy34NKRbnUbMv85OKTEvRmlMTdu6Qmcb2Az5LfOMT5aPA9G
       permissions: "*"
-  
+  adminpassword: $2a$08$V4gPANVy34NKRbnUbMv85OKTEvRmlMTdu6Qmcb2Az5LfOMT5aPA9G
+  secretkey: c2VjcmV0

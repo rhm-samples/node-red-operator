@@ -72,8 +72,16 @@
              storage: "{{ persistentvolume.size | quote }}"
 
 
+# Find if there are any existing configmap in the given namespace.
+- name: find existing configmaps
+  set_fact:
+    #nodered_namespace: "{{ meta.namespace }}"
+    config_map_settings: "{{ q('k8s', api_version='v1', kind='ConfigMap', resource_name='settings-configmap', namespace=meta.namespace) }}"
+
+# Do not create/reconcile if configmaps exist
 - name: create config-map
   include_tasks: configmap.yaml
+  when: config_map_settings|length==0
 
 #- name: upgrade deployment
 #  include_tasks: upgrade.yaml
