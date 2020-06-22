@@ -3,15 +3,14 @@ kind: NodeRedConfig
 metadata:
   name: noderedconfig
 spec:
-  flowfilename:
+  flowfilename: test.json
   functionglobalcontext: 
     - os:require('os')
-    - jfive:require("johnny-five")
-    - j5board:require("johnny-five").Board({repl:false})
+    - fs:require('fs')
   otherusers:
     - username: "shraddha"
       password: $2a$08$V4gPANVy34NKRbnUbMv85OKTEvRmlMTdu6Qmcb2Az5LfOMT5aPA9G
-      permissions: "read"
+      permissions: "write"
     - username: "alkesh"
       password: $2a$08$V4gPANVy34NKRbnUbMv85OKTEvRmlMTdu6Qmcb2Az5LfOMT5aPA9G
       permissions: "*"

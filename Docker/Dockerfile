@@ -53,8 +53,9 @@ USER node-red
 
 # Env variables
 ENV NODE_RED_VERSION=1.0.6 \
-    NODE_PATH=/usr/src/node-red/node_modules:/data/node_modules \
-    FLOWS=flows.json
+    NODE_PATH=/usr/src/node-red/node_modules:/data/node_modules 
+
+#    FLOWS=flows.json
 
 # ENV NODE_RED_ENABLE_SAFE_MODE=true    # Uncomment to enable safe start mode (flows not running)
 ENV NODE_RED_ENABLE_PROJECTS=true     
@@ -68,8 +69,5 @@ EXPOSE 1880
 # Add a healthcheck (default every 30 secs)
 # HEALTHCHECK CMD curl http://localhost:1880/ || exit 1
 
-#Install dependencies if any
-RUN [ -f "/data/package.json" ] && { cd /data ; npm install; }
-
 #Start Node-RED
-ENTRYPOINT ["npm", "start", "--", "--settings", "/data/usr/conf/settings.js" ]
+ENTRYPOINT [ "npm", "start", "--", "--settings", "/data/usr/conf/settings.js" ]

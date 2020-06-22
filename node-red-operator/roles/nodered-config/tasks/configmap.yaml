@@ -16,6 +16,7 @@
                mqttReconnectTime: 15000,
                serialReconnectTime: 15000,
                debugMaxLength: 1000,
+               flowFile: "{{ flowfilename  }}",
                credentialSecret: "{{ secretkey|b64decode if secretkey != 'false' else 'false'|bool }}",
                userDir: '/data',
                adminAuth: {
@@ -35,9 +36,13 @@
                    ]
                },
                functionGlobalContext: {
-                 {% for node in functionglobalcontext %}
-                   "{{ functionglobalcontext }}"
-                 {% endfor %}
+                  {% for module in functionglobalcontext %}
+                    {% if loop.last %}
+                      {{ module }}
+                    {% else %}
+                      {{ module }}, 
+                    {% endif %}
+                  {% endfor %}
                },
                exportGlobalContextKeys: false,
                logging: {

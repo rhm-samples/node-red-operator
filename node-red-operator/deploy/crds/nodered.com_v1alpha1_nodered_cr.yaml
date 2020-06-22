@@ -5,7 +5,7 @@ metadata:
 spec:
   size: 1
   persistentvolume:
-    enabled: false
+    enabled: true
     storageclass: ibmc-file-silver-gid
     accessmode: ReadWriteMany
     size: 100Mi

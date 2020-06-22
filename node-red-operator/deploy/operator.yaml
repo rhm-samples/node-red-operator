@@ -36,7 +36,7 @@ spec:
             - name: ANSIBLE_GATHERING
               value: explicit
             - name: RELATED_IMAGE_NODERED
-              value: registry.connect.redhat.com/ibm-edge/node-red:0.0.2
+              value: image-registry.openshift-image-registry.svc:5000/node-red-p2/node-red:0.0.3
             - name: RELATED_IMAGE_NODERED_BACKUP
               value: registry.connect.redhat.com/ibm-edge/node-red-backup-restore:v0.0.1
             - name: RELATED_IMAGE_NODERED_RESTORE
