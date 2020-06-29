@@ -20,8 +20,14 @@
     msg: "Restore Request will be failed as PVC doesnt exist !"
   when: nodered_pv.resources | length == 0
 - fail:
-    msg: "Restore Request will be failed as PVC requirement not met !"
-  when: nodered_pv.resources[0].status.phase is defined and not "Bound" in nodered_pv.resources[0].status.phase and nodered_pv.resources[0].spec.accessModes is defined and not "ReadWriteMany" in nodered_pv.resources[0].spec.accessModes[0]
+    msg: "Restore Request will be failed as PVC is not bound !"
+  when: not "Bound" in nodered_pv.resources[0].status.phase
+- fail:
+    msg: "Restore Request will be failed as PVC is not of type READWRITEMANY!"
+  when: not "ReadWriteMany" in nodered_pv.resources[0].spec.accessModes[0]
+#- fail:
+#    msg: "Restore Request will be failed as PVC requirement not met !"
+#  when: nodered_pv.resources[0].status.phase is defined and not "Bound" in nodered_pv.resources[0].status.phase and nodered_pv.resources[0].spec.accessModes is defined and not "ReadWriteMany" in nodered_pv.resources[0].spec.accessModes[0]
 - name: set volume
   set_fact:
     volumeMounts:
