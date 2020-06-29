@@ -27,13 +27,19 @@
               claimName:  node-red-pvc
   when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true
 
-- name: Debug
-  debug:
-    msg:
-      - " Admin password: '{{ adminpassword }}'"
-      - " Storage Class: '{{ persistentvolume.storageclass }}'"
-      - " Access Mode: '{{ persistentvolume.accessmode }}'"
-      - " Size: '{{ persistentvolume.size }}'"
+- name: upgrade
+  include_tasks: upgrade.yaml
+
+
+#- name: Debug
+#  debug:
+#    msg:
+#      - '{{ pv_accessmode }}'
+#      - " Storage Class: '{{ persistentvolume.storageclass }}'"
+#      - " Access Mode: '{{ persistentvolume.accessmode }}'"
+#      - " Size: '{{ persistentvolume.size }}'"
+
+#Validate if the variables in the CR
 - name: Fail if Admin Password  is empty
   fail:
     msg: "AdminPassword is empty.Please provide an admin password***********"
@@ -47,11 +53,13 @@
 - name: Fail if AccessMode is empty
   fail:
     msg: "Please provide an AccessMode for PV creation******************"
-  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true and (persistentvolume.accessmode | default('', true) | trim == '')  
+  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true and (persistentvolume.accessmode | default('', true) | trim == '')
+
 - name: Fail is PV size is empty
   fail:
     msg: "Please provide the PV size. ***************"
-  when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true and (persistentvolume.size | default('', true) | trim == '')
+  when: 
+    - persistentvolume.enabled is defined and persistentvolume.enabled|bool == true and (persistentvolume.size | default('', true) | trim == '')
 - name: create pvc
   when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true
   k8s:
@@ -65,7 +73,7 @@
            app: node-red-app
        spec:
          storageClassName: "{{ persistentvolume.storageclass }}"
-         accessModes:
+         accessModes: 
            - "{{ persistentvolume.accessmode }}"
          resources:
            requests:
@@ -74,9 +82,6 @@
 
 - name: create config-map
   include_tasks: configmap.yaml
-
-#- name: upgrade deployment
-#  include_tasks: upgrade.yaml
 
 - name: deploy node-red
   vars:

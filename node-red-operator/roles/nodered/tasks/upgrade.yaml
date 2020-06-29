@@ -1,0 +1,27 @@
+---
+- name: Get older NodeRed CR
+  k8s_info:
+    kind: NodeRed
+    name: "nodered"
+    namespace: "{{ meta.namespace }}"
+    api_version: nodered.com/v1alpha1
+  register: oldernodered_cr
+
+- name: Add v1alpha1 parameters
+  k8s:
+    state: "present"
+    apply: yes
+    definition:
+      kind: NodeRed
+      apiVersion: nodered.com/v1alpha1
+      metadata:
+        name: "nodered"
+        namespace: "{{ meta.namespace }}"
+      spec:   
+        persistentvolume:
+          accessmode: ReadWriteOnce
+  when: oldernodered_cr is defined and oldernodered_cr.resources|length > 0  and oldernodered_cr.resources[0].spec.persistentvolume.accessmode is not defined
+  register: modeset
+
+- meta: end_play
+  when: modeset.changed
