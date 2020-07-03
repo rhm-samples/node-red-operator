@@ -1,5 +1,5 @@
 ---
-- name: Get older NodeRed CR
+- name: Get all NodeRed CRs
   k8s_info:
     kind: NodeRed
     name: "nodered"
@@ -7,7 +7,7 @@
     api_version: nodered.com/v1alpha1
   register: oldernodered_cr
 
-- name: Add v1alpha1 parameters
+- name: Add accessmode parameter if not present
   k8s:
     state: "present"
     apply: yes
