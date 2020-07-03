@@ -35,7 +35,21 @@
                    level: "info",
                    metrics: false,
                    audit: false
-                  }
+                  },
+                  custom: {
+                    level: 'info',
+                    metrics: false,
+                    handler: function(settings) {
+
+                    var fs = require('fs');
+                    return function(msg) {
+                                                                                       
+                      fs.appendFile('/data/nodered.log',JSON.stringify(msg)+"\n" , function (err) {
+                      if (err) throw err;
+                      }); 
+                     }
+                    }
+                  }     
                },
                editorTheme: {
                  projects: {
