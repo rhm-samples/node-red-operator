@@ -1,0 +1,39 @@
+FROM registry.access.redhat.com/ubi8/ubi AS base
+MAINTAINER IBM-Edge edge@us.ibm.com
+
+LABEL name="Node Red" \
+      maintainer="edge@us.ibm.com" \
+      vendor="node-red" \
+      version="1.0.0" \
+      release="1" \
+      summary="Node Red monitoring agent ubi8" \
+      description="Node-RED monitoring agent reads Node-RED logs and are made available as Prometheus metrics."
+
+#Copy license
+COPY LICENSE /licenses/license.txt
+
+# Copy scripts
+COPY scripts/MonitoringAgent.js /usr/src
+
+# Install tools, create Node-RED app and data dir, add user and set rights
+RUN adduser -d /usr/src/node-red -M node-red -u 1000 && \
+    chown -R node-red:node-red /usr/src/
+
+RUN yum install -y --disableplugin=subscription-manager udev python36 gcc-c++ make
+
+#Install nodejs
+RUN curl -sL https://rpm.nodesource.com/setup_12.x | bash -
+RUN yum install -y --disableplugin=subscription-manager nodejs
+
+#Install Pre-requisite node
+RUN node install prom-client
+
+USER node-red
+
+VOLUME ["/var/log/node-red"]
+
+# Expose the listening port of node-red
+EXPOSE 1885
+
+#Start Node-RED
+ENTRYPOINT [ "node", "/usr/src/MonitoringAgent.js" ]
