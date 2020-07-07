@@ -44,7 +44,7 @@
                     var fs = require('fs');
                     return function(msg) {
                                                                                        
-                      fs.appendFile('/data/nodered.log',JSON.stringify(msg)+"\n" , function (err) {
+                      fs.appendFile('/var/log/node-red/nodered.log',JSON.stringify(msg)+"\n" , function (err) {
                       if (err) throw err;
                       }); 
                      }

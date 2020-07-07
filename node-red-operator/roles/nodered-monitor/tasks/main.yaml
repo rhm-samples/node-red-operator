@@ -1,0 +1,93 @@
+--- 
+- k8s_info: 
+    kind: Deployment
+    name: node-red
+    namespace: "{{ meta.namespace }}"
+  name: "Get older NodeRed CR"
+  register: nodered_deployments
+
+- name: "Deploy node-red with side-car monitoring agent"
+  vars:
+    image:  "{{ lookup('env','RELATED_IMAGE_NODERED_MONITOR') }}"
+  k8s: 
+    state: present
+    apply: true
+    definition: 
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata: 
+        name: node-red
+        namespace: "{{ meta.namespace }}"
+      spec: 
+        template: 
+          spec: 
+            containers: 
+              - image: "{{ image }}"
+                imagePullPolicy: Always
+                livenessProbe: 
+                  httpGet: 
+                    path: /
+                    port: 1885
+                    scheme: HTTP
+                  initialDelaySeconds: 30
+                  periodSeconds: 60
+                  timeoutSeconds: 5
+                name: node-red-log-monitor
+                ports: 
+                  - containerPort: 1885
+                readinessProbe: 
+                  failureThreshold: 5
+                  httpGet: 
+                    path: /
+                    port: 1885
+                    scheme: HTTP
+                  initialDelaySeconds: 30
+                  periodSeconds: 60
+                  timeoutSeconds: 5
+                volumeMounts: 
+                  - mountPath: /var/log/node-red
+                    name: log-volume
+            volumes: 
+              - emptyDir: {}
+                name: log-volume
+  when: nodered_deployments is defined and nodered_deployments.resources|length > 0
+
+- name: Create Service for monitor
+  k8s:
+    definition:
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: node-red-svc-monitoring
+          namespace: "{{ meta.namespace }}"
+          labels:
+            app: node-red-app
+        spec:
+          selector:
+              app: node-red-app
+          ports:
+            - name: 1885-metrics
+              protocol: TCP
+              port: 1885
+              targetPort: 1885
+  when: nodered_deployments is defined and nodered_deployments.resources|length > 0
+
+- name: Create Service Monitor
+  k8s:
+    definition:
+      apiVersion: monitoring.coreos.com/v1
+      kind: ServiceMonitor
+      metadata:
+        labels:
+          app: node-red-app
+        name: nodered-monitor
+        namespace: "{{ meta.namespace }}"
+      spec:
+        endpoints:
+        - interval: 10s
+          port: 1885-metrics
+          scheme: http
+        selector:
+          matchLabels:
+            app: node-red-app
+  when: nodered_deployments is defined and nodered_deployments.resources|length > 0

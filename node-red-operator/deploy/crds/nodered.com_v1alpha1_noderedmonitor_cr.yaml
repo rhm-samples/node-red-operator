@@ -1,0 +1,5 @@
+apiVersion: nodered.com/v1alpha1
+kind: NodeRedMonitor
+metadata:
+  name: noderedmonitor
+spec:

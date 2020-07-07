@@ -5,10 +5,14 @@
     volumeMounts:
       - mountPath: /data/usr/conf
         name: config-volume
+      - mountPath: /var/log/node-red
+        name: log-volume
     volumeNames:
       - configMap:
           name: settings-configmap
         name: config-volume
+      - name: log-volume
+        emptyDir: {}
 
 - block:
     - name: set volume
@@ -18,6 +22,8 @@
             name: config-volume
           - mountPath: /data
             name: data
+          - mountPath: /var/log/node-red
+            name: log-volume
         volumeNames:
           - configMap:
               name: settings-configmap
@@ -25,6 +31,8 @@
           - name: data
             persistentVolumeClaim:
               claimName:  node-red-pvc
+          - name: log-volume
+            emptyDir: {}
   when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true
 
 - name: upgrade

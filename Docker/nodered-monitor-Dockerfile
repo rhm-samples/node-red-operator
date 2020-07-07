@@ -26,7 +26,7 @@ RUN curl -sL https://rpm.nodesource.com/setup_12.x | bash -
 RUN yum install -y --disableplugin=subscription-manager nodejs
 
 #Install Pre-requisite node
-RUN node install prom-client
+RUN npm install prom-client
 
 USER node-red
 

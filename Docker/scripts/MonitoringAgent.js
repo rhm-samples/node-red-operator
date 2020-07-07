@@ -83,7 +83,7 @@ http.createServer(function (req, res) {
         }
         else
         {
-                res.writeHead(404);
-                res.end(JSON.stringify({error:"Resource not found"}));
+                res.writeHead(200);
+                res.end(JSON.stringify({message:"Append /metrics to get Prometheus metrics "}));
         }
 }).listen(1885);

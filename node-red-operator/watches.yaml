@@ -24,3 +24,11 @@
   group: nodered.com
   kind: NodeRedConfig
   role: nodered-config
+
+- version: v1alpha1
+  group: nodered.com
+  kind: NodeRedMonitor
+  role: nodered-monitor
+  overrideValues:
+    image: $RELATED_IMAGE_NODERED_MONITOR
+
