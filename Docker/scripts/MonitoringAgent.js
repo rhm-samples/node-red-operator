@@ -24,21 +24,18 @@ var msg="";
 var fatalCounter=0, errorCounter=0, infoCounter=0, warningCounter=0;
 var fstat;
 var bytesToRead;
-var currentFileTime;
 http.createServer(function (req, res) {
 
         if (req.url== "/metrics") {
             try{
 				var fd=fs.openSync('/var/log/node-red/nodered.log', 'r');
 				fsstat=fs.fstatSync(fd);
-				fileSize=fsstat.size;
-				
 				//if the nodered file is rotated by logrotate and new one is created
-				if (currentFileTime != fsstat.birthtimeMs) {
-					currentFileTime=fsstat.birthtimeMs;
+				if (fileSize > fsstat.size) {
 					//Reset offset to start reading form start if file
 					offset=0;
                 }
+				fileSize=fsstat.size;
 				bytesToRead=fileSize-offset;
 				var buffer=Buffer.alloc(bytesToRead);
 				var read=fs.readSync(fd, buffer, 0, bytesToRead, offset);
