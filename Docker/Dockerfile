@@ -28,7 +28,7 @@ WORKDIR /usr/src/node-red
 
 # package.json contains Node-RED NPM module and node dependencies
 COPY package.json .
-RUN yum install -y --disableplugin=subscription-manager udev python36 gcc-c++ make cronie
+RUN yum install -y --disableplugin=subscription-manager udev python36 gcc-c++ make logrotate
 #Install nodejs
 RUN curl -sL https://rpm.nodesource.com/setup_12.x | bash -
 RUN yum install -y --disableplugin=subscription-manager nodejs
@@ -48,6 +48,9 @@ COPY --from=build /usr/src/node-red/prod_node_modules ./node_modules
 
 # Chown
 RUN chown -R node-red:node-red /usr/src/node-red 
+
+# Copy Logrotate conf file
+COPY scripts/nodered.conf /etc/logrotate.d/
    
 USER node-red
 
