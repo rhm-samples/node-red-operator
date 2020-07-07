@@ -31,8 +31,9 @@ http.createServer(function (req, res) {
 				var fd=fs.openSync('/var/log/node-red/nodered.log', 'r');
 				fsstat=fs.fstatSync(fd);
 				//if the nodered file is rotated by logrotate and new one is created
-				if (fileSize > fsstat.size) {
+				if (parseInt(fileSize) > parseInt(fsstat.size)) {
 					//Reset offset to start reading form start if file
+					console.log("File changed");
 					offset=0;
                 }
 				fileSize=fsstat.size;
@@ -95,3 +96,5 @@ http.createServer(function (req, res) {
             res.end(JSON.stringify({message:"Append /metrics to get Prometheus metrics "}));
         }
 }).listen(1885);
+
+console.log("Log Monitoring Agent started on port 1885");
