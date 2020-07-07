@@ -34,7 +34,7 @@ http.createServer(function (req, res) {
 				fileSize=fsstat.size;
 				
 				//if the nodered file is rotated by logrotate and new one is created
-				if (currentFileTime != fsstat.birthtimeMs)) {
+				if (currentFileTime != fsstat.birthtimeMs) {
 					currentFileTime=fsstat.birthtimeMs;
 					//Reset offset to start reading form start if file
 					offset=0;
