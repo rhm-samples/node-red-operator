@@ -68,7 +68,7 @@ http.createServer(function (req, res) {
 				gaugeMetricsSum.labels("Info").set(infoCounter);
 
                 fs.closeSync(fd);
-
+            }
 			catch(err){
 				console.error("Error generating metric.");
 			}
