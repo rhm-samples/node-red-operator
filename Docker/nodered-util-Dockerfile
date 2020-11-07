@@ -12,9 +12,9 @@ COPY LICENSE /licenses/license.txt
 
 ENV USER_NAME node-red 
 ENV SCRIPTS /opt/scripts
-#ENV BUCKET_NAME="alkesh-s3-node-red"
+#ENV BUCKET_NAME="REPLACE_BUCKET_NAME"
 #ENV ENDPOINT="https://s3.private.jp-tok.cloud-object-storage.appdomain.cloud"
-#ENV API_KEY="D2rHxdkuYcJ3wSCufiha_xjDJr2C8ZwJwho5Q-P4mANx"
+#ENV API_KEY="REPLACE_API_KEY"
 #ENV AUTH_ENDPOINT="https://iam.cloud.ibm.com/identity/token"
 #ENV RESOURCE_CRN="crn:v1:bluemix:public:cloud-object-storage:global:a/aeb2e9f6f29f41b99ce8e98c1c73e611:758a7425-ef7b-4628-b5c0-2c15ef8c03e0::"
 #ENV NAMESPACE="node-red-testing"
