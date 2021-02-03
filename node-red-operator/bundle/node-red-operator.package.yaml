@@ -1,5 +1,0 @@
-channels:
-- currentCSV: node-red-operator.v0.0.2
-  name: alpha
-defaultChannel: alpha
-packageName: node-red-operator-certified
