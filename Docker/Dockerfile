@@ -4,9 +4,9 @@ MAINTAINER IBM-Edge edge@us.ibm.com
 LABEL name="Node Red" \
       maintainer="edge@us.ibm.com" \
       vendor="node-red" \
-      version="1.0.6" \
+      version="1.2.8" \
       release="1" \
-      summary="Node Red v1.0.6 setup on ubi8" \
+      summary="Node Red v1.2.8 setup on ubi8" \
       description="Node-RED is a programming tool for wiring together hardware devices, APIs and online services in new and interesting ways."
 
 #Copy license
@@ -52,7 +52,7 @@ RUN chown -R node-red:node-red /usr/src/node-red
 USER node-red
 
 # Env variables
-ENV NODE_RED_VERSION=1.0.6 \
+ENV NODE_RED_VERSION=1.2.8 \
     NODE_PATH=/usr/src/node-red/node_modules:/data/node_modules \
     FLOWS=flows.json
 
