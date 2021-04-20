@@ -1,0 +1,24 @@
+# permissions for end users to edit nodereds.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nodered-editor-role
+rules:
+- apiGroups:
+  - nodered.com
+  resources:
+  - nodereds
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - nodered.com
+  resources:
+  - nodereds/status
+  verbs:
+  - get

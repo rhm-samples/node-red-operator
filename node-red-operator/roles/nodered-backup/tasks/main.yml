@@ -3,7 +3,7 @@
   k8s_info:
     kind: PersistentVolumeClaim
     name: "node-red-pvc"
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
   register: nodered_pv
 
 - name: Check PVC Exists
@@ -52,8 +52,8 @@
           apiVersion: batch/v1
           kind: Job
           metadata:
-            name: 'node-red-backup1c-{{ meta.name }}'
-            namespace: '{{ meta.namespace }}'
+            name: 'node-red-backup1c-{{ ansible_operator_meta.name }}'
+            namespace: '{{ ansible_operator_meta.namespace }}'
           spec:
             backoffLimit: 0
             restartPolicy: Never
@@ -105,7 +105,7 @@
                         key: RESOURCE_CRN
                   # Namespace
                   - name: NAMESPACE
-                    value: "{{ meta.namespace }}"
+                    value: "{{ ansible_operator_meta.namespace }}"
                   volumeMounts: "{{ volumeMounts }}"
                   command:
                     - /bin/sh
@@ -147,8 +147,8 @@
           apiVersion: batch/v1beta1
           kind: CronJob
           metadata:
-            name: 'nodered-backup-{{ meta.name }}'
-            namespace: '{{ meta.namespace }}'
+            name: 'nodered-backup-{{ ansible_operator_meta.name }}'
+            namespace: '{{ ansible_operator_meta.namespace }}'
           spec:
             replias: 1
             successfulJobsHistoryLimit: 1
@@ -203,7 +203,7 @@
                             key: RESOURCE_CRN
                       # Namespace
                       - name: NAMESPACE
-                        value: "{{ meta.namespace }}"
+                        value: "{{ ansible_operator_meta.namespace }}"
                       volumeMounts: "{{ volumeMounts }}"
                       command:
                         - /bin/sh

@@ -6,7 +6,7 @@
       kind: ConfigMap
       metadata:
         name: settings-configmap
-        namespace: "{{ meta.namespace }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
         labels:
           app: node-red-app
       data:

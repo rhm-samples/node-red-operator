@@ -1,9 +1,0 @@
-apiVersion: operators.coreos.com/v1
-kind: OperatorSource
-metadata:
-  name: openlabs3
-spec:
-  displayName: OpenLabs3
-  endpoint: https://quay.io/cnr
-  registryNamespace: opentestlabs3
-  type: appregistry

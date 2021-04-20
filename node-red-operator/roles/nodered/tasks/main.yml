@@ -1,4 +1,88 @@
 ---
+# check entitlement
+
+- name : Get Entitlement secret
+  k8s_info:
+    api_version: v1
+    kind: Secret
+    name: "{{ entitlement_secret_name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: secret_result
+
+
+- name: "set Entitlement key value"
+  set_fact:
+    entitlement_key: "{{ lookup('env','entitlementkey') }}"
+- name: Print Entitlement key
+  debug:
+    var: entitlement_key
+- name: Check entitlement with valid key
+  uri:
+    url: "{{entitlementurl}}"
+    headers:
+      x-client-id: "{{ xclientid }}"
+      x-client-secret: "{{ xclientsecret }}"
+    status_code: 200,400,500
+    return_content: yes
+  register: result
+
+- name: print valid key register
+  debug:
+    msg:
+      - "Entitlement response: {{ result }}"
+      - "status code: {{ result.json.statusCode }}"
+      - "Valid: {{ result.json.valid }}"
+
+- name: print result
+  debug:
+    var: result.json.statusCode
+    var: result.json.valid
+
+
+- name: "set Entitlement if valid"
+  set_fact:
+    entitlement: "Entitled User"
+  when: ( result.json.valid == true  and result.json.statusCode == 200)
+- name: "set Entitlement if invalid"
+  set_fact:
+    entitlement: "Not Entitled"
+  when: ( result.json.valid == false  and result.json.statusCode == 500)
+- name: "set Entitlement if missing"
+  set_fact:
+    entitlement: "Missing Entitlement Key in Secret"
+  when: ( result.json.statusCode == 400)
+- name: Get Dashboard CR Details to set entitlement
+  k8s_info:
+    api_version: nodered.com/v1alpha1
+    kind: NodeRed
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: custom_resource_start_check
+
+
+- name: Set CR Status to Check Entitlement
+  k8s_status:
+    api_version: nodered.com/v1alpha1
+    kind: NodeRed
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    status:
+#      phase: "{{ checkentitlement }}"
+      isentitled: "{{ entitlement }}"
+#      url: " "
+  when: (custom_resource_start_check | json_query('resources[].status.phase') == [])
+
+
+- name: Fail if entitlement is invalid
+  fail:
+    msg: "User is Not Entitled to Node Red Operator"
+  when: ( result.json.valid == false  and result.json.statusCode == 500)
+
+- name: Fail if entitlement key is missing
+  fail:
+    msg: "Entitlement Key is missing. Please check"
+  when: (result.json.statusCode == 400)
+
 # tasks file for noderedhelmansible
 - name: set default volumes
   set_fact:
@@ -60,6 +144,26 @@
     msg: "Please provide the PV size. ***************"
   when: 
     - persistentvolume.enabled is defined and persistentvolume.enabled|bool == true and (persistentvolume.size | default('', true) | trim == '')
+
+- name: Get Dashboard CR Details
+  k8s_info:
+    api_version: nodered.com/v1alpha1
+    kind: NodeRed
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: custom_resource_start
+
+- name: Set CR Status to Installing
+  k8s_status:
+    api_version: nodered.com/v1alpha1
+    kind: NodeRed
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    status:
+      phase: "{{ pending }}"
+      url: "Installation In Progress ..."
+  when: (custom_resource_start | json_query('resources[].status.phase') == [])
+
 - name: create pvc
   when: persistentvolume.enabled is defined and persistentvolume.enabled|bool == true
   k8s:
@@ -68,7 +172,7 @@
        kind: PersistentVolumeClaim
        metadata:
          name: node-red-pvc
-         namespace: "{{ meta.namespace }}"
+         namespace: "{{ ansible_operator_meta.namespace }}"
          labels:
            app: node-red-app
        spec:
@@ -92,7 +196,7 @@
       kind: Deployment
       metadata:
         name: node-red
-        namespace: "{{ meta.namespace }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
       spec:
         selector:
           matchLabels:
@@ -106,7 +210,8 @@
             labels:
               app: node-red-app
           spec:
-            imagePullSecrets:
+#            imagePullSecrets:
+#              - name: secured-operator-check
             serviceAccountName: node-red-operator
             securityContext:
               fsGroup: 1000
@@ -152,7 +257,7 @@
         kind: Service
         metadata:
           name: node-red-svc
-          namespace: "{{ meta.namespace }}"
+          namespace: "{{ ansible_operator_meta.namespace }}"
           labels:
             app: node-red-app
         spec:
@@ -171,7 +276,7 @@
         kind: Route
         metadata:
           name: node-red
-          namespace: "{{ meta.namespace }}"
+          namespace: "{{ ansible_operator_meta.namespace }}"
           labels:
             app: node-red-app
         spec:
@@ -180,4 +285,51 @@
             name: node-red-svc
           port:
             targetPort: 1880-tcp
+          tls:
+            termination: edge
+            insecureEdgeTerminationPolicy: Allow
+          wildcardPolicy: None
+  register: dashboard_route
+- name: Get pod ++++++++++++++++++++++++++
+  k8s_info:
+    kind: Pod
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    label_selectors:
+      - app = node-red-app
+  register: podlist
+  until:
+  - "{{ podlist.resources|length > 0 }}"
+  - "{{ podlist.resources[0].status.phase == \"Running\" }}"
+  - "{{ podlist.resources[0].status.conditions[1].status == \"True\" }}"
+  retries: 20
+  delay: 15
 
+- name: Debug
+  debug:
+    msg:
+      - "Pod list: {{ podlist }}"
+
+- name: Debug
+  debug:
+    msg:
+      - "Pod status: {{ item.status.phase }}"
+  loop: "{{ podlist.resources }}"
+
+- name: Get Dashboard CR Details
+  k8s_info:
+    api_version: nodered.com/v1alpha1
+    kind: NodeRed
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: custom_resource_start
+
+- name: Set CR Status to Installing
+  k8s_status:
+    api_version: nodered.com/v1alpha1
+    kind: NodeRed
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    status:
+      phase: "{{ completed }}"
+      url: "https://{{ dashboard_route.result.spec.host }}"
+  when: (custom_resource_start | json_query('resources[].status.phase') == ['{{ pending }}'])

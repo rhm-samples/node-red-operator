@@ -1,5 +1,9 @@
 ---
 # defaults file for noderedhelmansible
+pending: "Installing"
+inprogress: "Initializing"
+completed: "Ready"
+failed: "Failed"
 chart:
   apiVersion: v2
   name: nodered-chart
@@ -22,3 +26,12 @@ persistentvolume:
   size: 100Mi
 adminpassword: $2a$08$V4gPANVy34NKRbnUbMv85OKTEvRmlMTdu6Qmcb2Az5LfOMT5aPA9G
 secretkey: c2VjcmV0
+entitlement: "not-set"
+checkentitlement: "Check Entitlement"
+entitlement_secret_name: "node-red-entitlement"
+entitlementurl: "https://labs.developer.ibm.com/edge/serviceids/validate.json?apikey={{entitlement_key}}"
+entitlement_key: "not-set"
+xclientid: "edge"
+xclientsecret: "dff2efa68c83302699ac"
+invalid: "false"
+missing: "missing apikey"

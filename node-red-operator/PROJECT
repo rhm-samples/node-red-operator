@@ -1,0 +1,14 @@
+domain: com
+layout: ansible.sdk.operatorframework.io/v1
+projectName: node-red-operator
+resources:
+- group: nodered
+  kind: NodeRed
+  version: v1alpha1
+- group: nodered
+  kind: NodeRedBackup
+  version: v1alpha1
+- group: nodered
+  kind: NodeRedRestore
+  version: v1alpha1
+version: 3-alpha

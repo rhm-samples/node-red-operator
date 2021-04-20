@@ -3,7 +3,7 @@
   k8s_info:
     kind: PersistentVolumeClaim
     name: "node-red-pvc"
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
   register: nodered_pv
 
 - name: Check PVC Exists
@@ -48,8 +48,8 @@
       apiVersion: batch/v1
       kind: Job
       metadata:
-        name: 'nodered-restore-{{ meta.name }}'
-        namespace: '{{ meta.namespace }}'
+        name: 'nodered-restore-{{ ansible_operator_meta.name }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
       spec:
         backoffLimit: 0
         restartPolicy: Never
@@ -124,8 +124,8 @@
 - name: Wait for Job to Complete
   k8s_info:
     kind: Job
-    name: "nodered-restore-{{ meta.name }}"
-    namespace: "{{ meta.namespace }}"   
+    name: "nodered-restore-{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"   
   register: jobstatus
   until: 
     - "'True' in ( jobstatus | json_query('resources[].status.conditions[].status'))"
@@ -147,7 +147,7 @@
 - name: Get list of Node Red pods ++++++++++++++++++++++++++
   k8s_info:
     kind: Pod
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
     label_selectors:
       - app = node-red-app
   register: podlist
@@ -159,6 +159,6 @@
       kind: "Pod"
       metadata:
         name: "{{ item.metadata.name }}"
-        namespace: "{{ meta.namespace }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
   when: restoreJob.changed and not "Failed" in status
   loop: "{{ podlist.resources }}"

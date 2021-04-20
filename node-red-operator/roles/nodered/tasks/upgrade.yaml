@@ -3,7 +3,7 @@
   k8s_info:
     kind: NodeRed
     name: "nodered"
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
     api_version: nodered.com/v1alpha1
   register: oldernodered_cr
 
@@ -16,7 +16,7 @@
       apiVersion: nodered.com/v1alpha1
       metadata:
         name: "nodered"
-        namespace: "{{ meta.namespace }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
       spec:   
         persistentvolume:
           accessmode: ReadWriteOnce

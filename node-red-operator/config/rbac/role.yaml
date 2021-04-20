@@ -1,0 +1,102 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+  ##
+  ## Base operator rules
+  ##
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+      - pods
+      - pods/exec
+      - pods/log
+      - configmaps
+      - endpoints
+      - persistentvolumeclaims
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+      - daemonsets
+      - replicasets
+      - statefulsets
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  ##
+  ## Rules for nodered.com/v1alpha1, Kind: NodeRed
+  ##
+  - apiGroups:
+      - nodered.com
+    resources:
+      - nodereds
+      - nodereds/status
+      - nodereds/finalizers
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  ##
+  ## Rules for nodered.com/v1alpha1, Kind: NodeRedBackup
+  ##
+  - apiGroups:
+      - nodered.com
+    resources:
+      - noderedbackups
+      - noderedbackups/status
+      - noderedbackups/finalizers
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  ##
+  ## Rules for nodered.com/v1alpha1, Kind: NodeRedRestore
+  ##
+  - apiGroups:
+      - nodered.com
+    resources:
+      - noderedrestores
+      - noderedrestores/status
+      - noderedrestores/finalizers
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+# +kubebuilder:scaffold:rules
+  - apiGroups:
+      - security.openshift.io
+    resources:
+      - securitycontextconstraints
+    resourceNames:
+      - anyuid
+    verbs:
+      - use
